@@ -7,19 +7,29 @@ class ApiService {
   static const String baseUrl = 'https://freetux.pythonanywhere.com/api';
 
   Future<Map<String, dynamic>?> login(String username, String password) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/auth/login/'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'username': username, 'password': password}),
-    );
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/auth/login/'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'username': username, 'password': password}),
+      );
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      await JwtStorage.saveToken(data['access']);
-      return data;
+      print('Status Code: ${response.statusCode}');
+      print('Body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        await JwtStorage.saveToken(data['access']);
+        return data;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print('Login error: $e');
+      return null;
     }
-    return null;
   }
+
 
   Future<Map<String, dynamic>?> register(String username, String email,
       String firstName, String lastName, String password) async {
