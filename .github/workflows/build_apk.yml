@@ -1,13 +1,11 @@
-name: Build Flutter APK
+name: Build APK
 
 on:
   push:
-    branches: [ main, master ]
-  workflow_dispatch:
+    branches: [ main ]
 
 jobs:
   build:
-    name: Build APK
     runs-on: ubuntu-latest
 
     steps:
@@ -27,7 +25,7 @@ jobs:
         run: flutter build apk --release
 
       - name: Upload APK as Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sooraneh-app-apk
           path: build/app/outputs/flutter-apk/app-release.apk
