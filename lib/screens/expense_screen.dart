@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:persian_datetime/persian_datetime.dart';
+import 'package:shamsi_date/shamsi_date.dart';
 import 'package:sooraneh_mobile/models/expense.dart';
 import 'package:sooraneh_mobile/services/api_service.dart';
 
@@ -26,6 +26,16 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
     return [];
   }
 
+  String _convertToJalali(String enDateString) {
+    try {
+      final dateTime = DateTime.parse(enDateString);
+      final jDate = Jalali.fromDateTime(dateTime);
+      return '${jDate.year}/${jDate.month.toString().padLeft(2, '0')}/${jDate.day.toString().padLeft(2, '0')}';
+    } catch (e) {
+      return 'تاریخ نامعتبر';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,7 +53,7 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
             itemCount: snapshot.data!.length,
             itemBuilder: (context, index) {
               final exp = snapshot.data![index];
-              final jDate = PersianDate.fromEnDateTimeString(exp.date).format("yyyy/mm/dd");
+              final jDate = _convertToJalali(exp.date);
               return ListTile(
                 title: Text(exp.text),
                 subtitle: Text('$jDate - ${exp.amount} تومان'),
