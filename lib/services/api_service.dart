@@ -3,8 +3,8 @@ import 'package:http/http.dart' as http;
 import 'package:sooraneh_mobile/utils/jwt_storage.dart';
 
 class ApiService {
-  // 🔥 جای YOUR_LOCAL_IP رو با آی‌پی دستگاه خودتون عوض کنید، مثلاً 192.168.1.100
-  static const String baseUrl = 'http://YOUR_LOCAL_IP:8000/api';
+
+  static const String baseUrl = 'https://Freetux.pythonanywhere.com/api';
 
   Future<Map<String, dynamic>?> login(String username, String password) async {
     final response = await http.post(
