@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:sooraneh_mobile/screens/home_screen.dart';
 import 'package:sooraneh_mobile/services/api_service.dart';
 import 'package:sooraneh_mobile/utils/jwt_storage.dart';
+import 'package:sooraneh_mobile/utils/log_service.dart';
+
+
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -19,24 +22,31 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _login() async {
     if (_formKey.currentState!.validate()) {
       setState(() => _loading = true);
-      final result = await _apiService.login(
-        _usernameController.text,
-        _passwordController.text,
-      );
+
+      final username = _usernameController.text;
+      final password = _passwordController.text;
+
+      LogService.log("🟡 Trying to login with username: $username");
+
+      final result = await _apiService.login(username, password);
+
       setState(() => _loading = false);
 
       if (result != null) {
+        LogService.log("✅ Login successful for user: $username");
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => HomeScreen()),
         );
       } else {
+        LogService.log("❌ Login failed for user: $username");
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('ورود ناموفق. نام کاربری یا رمز اشتباه است.')),
         );
       }
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
