@@ -4,7 +4,7 @@ import 'package:sooraneh_mobile/utils/jwt_storage.dart';
 
 class ApiService {
 
-  static const String baseUrl = 'https://Freetux.pythonanywhere.com/api';
+  static const String baseUrl = 'https://freetux.pythonanywhere.com/api';
 
   Future<Map<String, dynamic>?> login(String username, String password) async {
     final response = await http.post(
