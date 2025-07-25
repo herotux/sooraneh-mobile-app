@@ -43,7 +43,7 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
             itemCount: snapshot.data!.length,
             itemBuilder: (context, index) {
               final exp = snapshot.data![index];
-              final jDate = PersianDateTime.parse(exp.date).format('YYYY/MM/DD');
+              final jDate = PersianDate.fromEnDateTimeString(exp.date).format("yyyy/mm/dd");
               return ListTile(
                 title: Text(exp.text),
                 subtitle: Text('$jDate - ${exp.amount} تومان'),

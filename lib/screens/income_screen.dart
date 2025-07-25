@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:persian_datetime/persian_datetime.dart';
+import 'package:persian_date/persian_date.dart';
 import 'package:sooraneh_mobile/models/income.dart';
 import 'package:sooraneh_mobile/services/api_service.dart';
 
@@ -43,7 +43,7 @@ class _IncomeScreenState extends State<IncomeScreen> {
             itemCount: snapshot.data!.length,
             itemBuilder: (context, index) {
               final inc = snapshot.data![index];
-              final jDate = PersianDateTime.parse(inc.date).format('YYYY/MM/DD');
+              final jDate = PersianDate.fromEnDateTimeString(inc.date).format("yyyy/mm/dd");
               return ListTile(
                 title: Text(inc.text),
                 subtitle: Text('$jDate - ${inc.amount} تومان'),
