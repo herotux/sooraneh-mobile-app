@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:daric/models/credit.dart';
 import 'package:daric/services/api_service.dart';
 import 'package:shamsi_date/shamsi_date.dart';
-import 'package:daric/widgets/my_date_picker.dart'; // فرض بر اینکه این ویجت رو ساختید
+import 'package:daric/widgets/persian_date_picker.dart';
+
 
 class EditCreditScreen extends StatefulWidget {
   final Credit credit;
