@@ -38,30 +38,65 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('هزینه‌ها')),
-      body: FutureBuilder<List<Expense>>(
-        future: _expensesFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          }
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('هزینه‌ای وجود ندارد'));
-          }
-          return ListView.builder(
-            itemCount: snapshot.data!.length,
-            itemBuilder: (context, index) {
-              final exp = snapshot.data![index];
-              final jDate = _convertToJalali(exp.date);
-              return ListTile(
-                title: Text(exp.text),
-                subtitle: Text('$jDate - ${exp.amount} تومان'),
-                trailing: Icon(Icons.arrow_forward_ios, size: 16),
+    return Directionality(
+      textDirection: TextDirection.rtl, // راست‌چین برای فارسی
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('هزینه‌ها'),
+        ),
+        body: FutureBuilder<List<Expense>>(
+          future: _expensesFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            }
+            if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return Center(
+                child: Text(
+                  'هزینه‌ای ثبت نشده',
+                  style: TextStyle(fontSize: 16),
+                ),
               );
-            },
-          );
-        },
+            }
+
+            final expenses = snapshot.data!;
+
+            return ListView.builder(
+              padding: EdgeInsets.all(16),
+              itemCount: expenses.length,
+              itemBuilder: (context, index) {
+                final exp = expenses[index];
+                final jDate = _convertToJalali(exp.date);
+
+                return Card(
+                  elevation: 4,
+                  margin: EdgeInsets.only(bottom: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: Colors.red[100],
+                      child: Icon(Icons.money_off, color: Colors.red[800]),
+                    ),
+                    title: Text(
+                      exp.text,
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Text('$jDate'),
+                    trailing: Text(
+                      '${exp.amount.toString()} تومان',
+                      style: TextStyle(
+                        color: Colors.red[800],
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                );
+              },
+            );
+          },
+        ),
       ),
     );
   }
