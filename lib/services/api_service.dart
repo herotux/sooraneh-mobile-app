@@ -112,40 +112,40 @@ class ApiService {
   }
 
   Future<List<Category>?> getCategories() async {
-  final token = await JwtStorage.getToken();
-  if (token == null) return null;
+    final token = await JwtStorage.getToken();
+    if (token == null) return null;
 
-  final response = await http.get(
-    Uri.parse('$baseUrl/v1/categories/'),
-    headers: {'Authorization': 'Bearer $token'},
-  );
+    final response = await http.get(
+      Uri.parse('$baseUrl/v1/categories/'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
 
-  if (response.statusCode == 200) {
-    final data = jsonDecode(response.body);
-    return List<Category>.from(data.map((item) => Category.fromJson(item)));
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return List<Category>.from(data.map((item) => Category.fromJson(item)));
+    }
+
+    return null;
   }
 
-  return null;
-}
+  Future<bool> addCategory(Category category) async {
+    final token = await JwtStorage.getToken();
+    if (token == null) return false;
 
-Future<bool> addCategory(Category category) async {
-  final token = await JwtStorage.getToken();
-  if (token == null) return false;
+    final response = await http.post(
+      Uri.parse('$baseUrl/v1/categories/'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(category.toJson()),
+    );
 
-  final response = await http.post(
-    Uri.parse('$baseUrl/v1/categories/'),
-    headers: {
-      'Authorization': 'Bearer $token',
-      'Content-Type': 'application/json',
-    },
-    body: jsonEncode(category.toJson()),
-  );
-
-  return response.statusCode == 201;
-}
+    return response.statusCode == 201;
+  }
 
 
-Future<bool> deleteCategory(int id) async {
+  Future<bool> deleteCategory(int id) async {
     final token = await JwtStorage.getToken();
     if (token == null) return false;
 

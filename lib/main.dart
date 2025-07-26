@@ -16,7 +16,7 @@ import 'package:daric/models/credit.dart';
 import 'package:daric/models/debt.dart';
 import 'package:daric/screens/add_credit_screen.dart';
 import 'package:daric/screens/add_debt_screen.dart';
-
+import 'package:daric/screens/credits_list_screen.dart';
 
 
 
@@ -55,7 +55,7 @@ class MyApp extends StatelessWidget {
         '/home': (context) => HomeScreen(),
         '/expense-list': (context) => ExpenseScreen(),
         '/income-list': (context) => IncomeScreen(),
-        '/categories': (context) => CategoryScreen(),
+        '/categories': (context) => CategoriesScreen(),
         '/add-category': (context) => AddCategoryScreen(),
         '/credit-list': (context) => CreditListScreen(),
         '/add-credit': (context) => AddCreditScreen(),
