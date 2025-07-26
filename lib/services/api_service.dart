@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:daric/utils/jwt_storage.dart';
+import 'package:daric/models/category.dart';
+
 
 class ApiService {
   static const String baseUrl = 'https://freetux.pythonanywhere.com/api';
@@ -107,4 +109,39 @@ class ApiService {
     }
     return null;
   }
+}
+
+
+
+Future<List<Category>?> getCategories() async {
+  final token = await JwtStorage.getToken();
+  if (token == null) return null;
+
+  final response = await http.get(
+    Uri.parse('$baseUrl/v1/categories/'),
+    headers: {'Authorization': 'Bearer $token'},
+  );
+
+  if (response.statusCode == 200) {
+    final data = jsonDecode(response.body);
+    return List<Category>.from(data.map((item) => Category.fromJson(item)));
+  }
+
+  return null;
+}
+
+Future<bool> addCategory(Category category) async {
+  final token = await JwtStorage.getToken();
+  if (token == null) return false;
+
+  final response = await http.post(
+    Uri.parse('$baseUrl/v1/categories/'),
+    headers: {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
+    },
+    body: jsonEncode(category.toJson()),
+  );
+
+  return response.statusCode == 201;
 }
