@@ -121,7 +121,7 @@ class _DebtListScreenState extends State<DebtListScreen> {
                     return false;
                   },
                   child: ListTile(
-                    title: Text(debt.text),
+                    title: Text(debt.description ?? ''),
                     subtitle: Text('مبلغ: ${debt.amount} - تاریخ: ${debt.date.toLocal().toString().split(' ')[0]}'),
                   ),
                 );

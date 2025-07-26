@@ -28,12 +28,11 @@ class _MyDatePickerState extends State<MyDatePicker> {
 
   Future<void> _showPicker() async {
     final picked = await showDatePickerDialog(
-      context: context,
-      initialDate: _selectedDate,
-      firstDate: DateTime(1300, 1, 1),
-      lastDate: DateTime(1500, 12, 29),
-      datePickerType: DatePickerType.Persian,
+        context: context,
+        initialDate: _selectedDate,
+        datePickerType: DatePickerType.Persian,
     );
+
 
     if (picked != null) {
       setState(() => _selectedDate = picked);
