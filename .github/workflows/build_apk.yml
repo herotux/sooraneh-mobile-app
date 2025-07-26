@@ -48,12 +48,16 @@ jobs:
 
       # Optional: send APK to Telegram
       - name: Send APK to Telegram
-        if: secrets.TELEGRAM_BOT_TOKEN && secrets.TELEGRAM_CHAT_ID
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
+          if [[ -z "$TELEGRAM_BOT_TOKEN" || -z "$TELEGRAM_CHAT_ID" ]]; then
+            echo "Telegram secrets not set, skipping upload."
+            exit 0
+          fi
+
           curl -F document=@temp_app/build/app/outputs/flutter-apk/app-release.apk \
-               -F chat_id=$TELEGRAM_CHAT_ID \
-               -F caption="🚀 نسخه جدید اپ منتشر شد" \
-               https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendDocument
+              -F chat_id=$TELEGRAM_CHAT_ID \
+              -F caption="🚀 نسخه جدید اپ منتشر شد" \
+              https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendDocument
