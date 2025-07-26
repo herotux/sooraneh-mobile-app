@@ -3,52 +3,77 @@ import 'package:http/http.dart' as http;
 import 'package:sooraneh_mobile/utils/jwt_storage.dart';
 
 class ApiService {
-
   static const String baseUrl = 'https://freetux.pythonanywhere.com/api';
 
+  /// ورود کاربر
   Future<Map<String, dynamic>?> login(String username, String password) async {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/auth/login/'),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'username': username, 'password': password}),
+        body: jsonEncode({
+          'username': username,
+          'password': password,
+        }),
       );
 
-      print('Status Code: ${response.statusCode}');
-      print('Body: ${response.body}');
+      print('Login Status: ${response.statusCode}');
+      print('Login Body: ${response.body}');
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        await JwtStorage.saveToken(data['access']);
-        return data;
-      } else {
-        return null;
+        final token = data['access']; // توکن دسترسی
+        if (token != null) {
+          await JwtStorage.saveToken(token);
+          return data;
+        }
       }
+      return null;
     } catch (e) {
-      print('Login error: $e');
+      print('Login Error: $e');
       return null;
     }
   }
 
+  /// ثبت‌نام کاربر جدید
+  Future<Map<String, dynamic>?> register(
+    String username,
+    String email,
+    String firstName,
+    String lastName,
+    String password,
+    bool isAdmin,
+  ) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/auth/register/'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'username': username,
+          'email': email,
+          'first_name': firstName,
+          'last_name': lastName,
+          'password': password,
+          'is_admin': isAdmin,
+        }),
+      );
 
-  Future<Map<String, dynamic>?> register(String username, String email,
-      String firstName, String lastName, String password) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/auth/register/'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'username': username,
-        'email': email,
-        'first_name': firstName,
-        'last_name': lastName,
-        'password': password,
-      }),
-    );
+      print('Register Status: ${response.statusCode}');
+      print('Register Body: ${response.body}');
 
-    if (response.statusCode == 201) {
-      return jsonDecode(response.body);
+      if (response.statusCode == 201) {
+        final data = jsonDecode(response.body);
+        final token = data['access'];
+        if (token != null) {
+          await JwtStorage.saveToken(token);
+          return data;
+        }
+      }
+      return null;
+    } catch (e) {
+      print('Register Error: $e');
+      return null;
     }
-    return null;
   }
 
   Future<List<dynamic>?> getIncomes() async {
