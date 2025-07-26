@@ -1,15 +1,15 @@
-name: Build and Upload APK
+name: Build Flutter APK with Android folder
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Setup Flutter
@@ -18,33 +18,42 @@ jobs:
           flutter-version: '3.19.0'
           channel: 'stable'
 
-      - name: Create project structure (if missing)
-        run: flutter create --project-name daric .
+      - name: Create temporary Flutter project
+        run: flutter create temp_app
 
-      - name: Overwrite default files with your code
+      - name: Replace lib, assets, and pubspec.yaml
         run: |
-          rm -rf lib/ pubspec.yaml assets/
-          cp -r ./lib ./assets ./pubspec.yaml ./
+          rm -rf temp_app/lib temp_app/assets temp_app/pubspec.yaml
+          cp -r lib temp_app/lib
+          cp -r assets temp_app/assets
+          cp pubspec.yaml temp_app/pubspec.yaml
+
+      - name: Add INTERNET permission to AndroidManifest.xml
+        run: |
+          sed -i '/<manifest/a\  <uses-permission android:name="android.permission.INTERNET" />' temp_app/android/app/src/main/AndroidManifest.xml
 
       - name: Get dependencies
+        working-directory: temp_app
         run: flutter pub get
 
-      - name: Add INTERNET permission
-        run: |
-          sed -i '/<manifest/a\  <uses-permission android:name="android.permission.INTERNET"/>' android/app/src/main/AndroidManifest.xml || true
-
-      - name: Generate app icon
-        run: flutter pub run flutter_launcher_icons:main
-
-      - name: Build APK
+      - name: Build APK (release)
+        working-directory: temp_app
         run: flutter build apk --release
 
-      - name: Upload to Telegram
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-apk
+          path: temp_app/build/app/outputs/flutter-apk/app-release.apk
+
+      # Optional: send APK to Telegram
+      - name: Send APK to Telegram
+        if: secrets.TELEGRAM_BOT_TOKEN && secrets.TELEGRAM_CHAT_ID
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
-          curl -F document=@build/app/outputs/flutter-apk/app-release.apk \
+          curl -F document=@temp_app/build/app/outputs/flutter-apk/app-release.apk \
                -F chat_id=$TELEGRAM_CHAT_ID \
-               -F caption="📦 نسخه جدید دریک منتشر شد!" \
+               -F caption="🚀 نسخه جدید اپ منتشر شد" \
                https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendDocument
