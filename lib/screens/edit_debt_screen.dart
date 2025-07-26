@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:daric/models/debt.dart';
 import 'package:daric/services/api_service.dart';
+import 'package:daric/widgets/persian_date_picker.dart';
+
+
+
 
 class EditDebtScreen extends StatefulWidget {
   final Debt debt;
@@ -15,8 +19,8 @@ class _EditDebtScreenState extends State<EditDebtScreen> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _textController;
   late TextEditingController _amountController;
-  late TextEditingController _payDateController;
-  late TextEditingController _dateController;
+  DateTime? _date;
+  DateTime? _payDate;
   final ApiService _apiService = ApiService();
 
   @override
@@ -24,16 +28,14 @@ class _EditDebtScreenState extends State<EditDebtScreen> {
     super.initState();
     _textController = TextEditingController(text: widget.debt.text);
     _amountController = TextEditingController(text: widget.debt.amount.toString());
-    _dateController = TextEditingController(text: widget.debt.date.toLocal().toString().split(' ')[0]);
-    _payDateController = TextEditingController(text: widget.debt.payDate.toLocal().toString().split(' ')[0]);
+    _date = widget.debt.date;
+    _payDate = widget.debt.payDate;
   }
 
   @override
   void dispose() {
     _textController.dispose();
     _amountController.dispose();
-    _dateController.dispose();
-    _payDateController.dispose();
     super.dispose();
   }
 
@@ -43,10 +45,10 @@ class _EditDebtScreenState extends State<EditDebtScreen> {
     final updatedDebt = Debt(
       id: widget.debt.id,
       personName: widget.debt.personName,
-      text: _textController.text,
-      amount: int.parse(_amountController.text),
-      date: DateTime.parse(_dateController.text),
-      payDate: DateTime.parse(_payDateController.text),
+      text: _textController.text.trim(),
+      amount: int.parse(_amountController.text.trim()),
+      date: _date ?? DateTime.now(),
+      payDate: _payDate ?? DateTime.now(),
     );
 
     final success = await _apiService.updateDebt(updatedDebt);
@@ -55,7 +57,7 @@ class _EditDebtScreenState extends State<EditDebtScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('بدهی با موفقیت ویرایش شد')),
       );
-      Navigator.of(context).pop(true); // برگرد و اعلام موفقیت کن
+      Navigator.of(context).pop(true);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('خطا در ویرایش بدهی')),
@@ -82,17 +84,24 @@ class _EditDebtScreenState extends State<EditDebtScreen> {
                 controller: _amountController,
                 decoration: InputDecoration(labelText: 'مبلغ'),
                 keyboardType: TextInputType.number,
-                validator: (val) => val == null || val.isEmpty ? 'مبلغ را وارد کنید' : null,
+                validator: (val) {
+                  if (val == null || val.isEmpty) return 'مبلغ را وارد کنید';
+                  final n = int.tryParse(val);
+                  if (n == null || n <= 0) return 'مبلغ باید عدد صحیح مثبت باشد';
+                  return null;
+                },
               ),
-              TextFormField(
-                controller: _dateController,
-                decoration: InputDecoration(labelText: 'تاریخ بدهی (YYYY-MM-DD)'),
-                validator: (val) => val == null || val.isEmpty ? 'تاریخ را وارد کنید' : null,
+              SizedBox(height: 16),
+              MyDatePicker(
+                initialDate: _date,
+                label: 'تاریخ بدهی',
+                onDateChanged: (date) => _date = date,
               ),
-              TextFormField(
-                controller: _payDateController,
-                decoration: InputDecoration(labelText: 'تاریخ پرداخت (YYYY-MM-DD)'),
-                validator: (val) => val == null || val.isEmpty ? 'تاریخ پرداخت را وارد کنید' : null,
+              SizedBox(height: 16),
+              MyDatePicker(
+                initialDate: _payDate,
+                label: 'تاریخ پرداخت',
+                onDateChanged: (date) => _payDate = date,
               ),
               SizedBox(height: 24),
               ElevatedButton(

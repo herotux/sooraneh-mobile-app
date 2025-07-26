@@ -158,11 +158,11 @@ Future<bool> deleteCategory(int id) async {
   }
 
 
-  Future<void> updateCategory(int id, Map<String, dynamic> data) async {
+  Future<bool> updateCategory(int id, Map<String, dynamic> data) async {
     final token = await JwtStorage.getToken();
-    if (token == null) return;
+    if (token == null) return false;
 
-    await http.put(
+    final response = await http.put(
       Uri.parse('$baseUrl/v1/categories/$id/'),
       headers: {
         'Authorization': 'Bearer $token',
@@ -170,7 +170,10 @@ Future<bool> deleteCategory(int id) async {
       },
       body: jsonEncode(data),
     );
+
+    return response.statusCode == 200 || response.statusCode == 204;
   }
+
 
   // دریافت لیست طلب ها
   Future<List<Credit>> getCredits() async {

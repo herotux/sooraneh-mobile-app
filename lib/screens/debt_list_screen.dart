@@ -109,7 +109,10 @@ class _DebtListScreenState extends State<DebtListScreen> {
                         ),
                       );
                       if (confirm == true) {
-                        await _deleteDebt(debt.id);
+                        if (debt.id != null) {
+                            await _deleteDebt(debt.id!);
+                        }
+
                         return true; // dismiss item
                       } else {
                         return false; // لغو حذف

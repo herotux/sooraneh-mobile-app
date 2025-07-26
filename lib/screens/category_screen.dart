@@ -19,7 +19,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   }
 
   void _loadCategories() {
-    _categoriesFuture = _apiService.getCategories();
+    _categoriesFuture = _apiService.getCategories() ?? Future.value([]);
   }
 
   Future<void> _deleteCategory(int id) async {

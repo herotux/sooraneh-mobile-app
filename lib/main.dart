@@ -14,6 +14,12 @@ import 'package:daric/screens/income_screen.dart';
 import 'package:daric/screens/expense_screen.dart';
 import 'package:daric/models/credit.dart';
 import 'package:daric/models/debt.dart';
+import 'package:daric/screens/add_credit_screen.dart';
+import 'package:daric/screens/add_debt_screen.dart';
+
+
+
+
 
 
 void main() async {

@@ -42,13 +42,17 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
     });
 
     final updatedCategory = Category(
-      id: widget.category.id,
-      name: _nameController.text.trim(),
-      isIncome: _isIncome,
-      parent: widget.category.parent,
+        id: widget.category.id,
+        name: _nameController.text.trim(),
+        isIncome: _isIncome,
+        parent: widget.category.parent,
     );
 
-    final success = await _apiService.updateCategory(updatedCategory);
+    final success = await _apiService.updateCategory(
+        updatedCategory.id,
+        updatedCategory.toJson(),
+    );
+
 
     setState(() {
       _isLoading = false;
