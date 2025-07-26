@@ -18,17 +18,25 @@ jobs:
           flutter-version: '3.19.0'
           channel: 'stable'
 
-      - name: Get dependencies
-        run: flutter pub get
+      - name: Go to source folder
+        working-directory: source
+        run: echo "Switched to source folder"
 
       - name: Add INTERNET permission
+        working-directory: source
         run: |
           sed -i '/<manifest/a\  <uses-permission android:name="android.permission.INTERNET"/>' android/app/src/main/AndroidManifest.xml
 
+      - name: Get dependencies
+        working-directory: source
+        run: flutter pub get
+
       - name: Build APK
+        working-directory: source
         run: flutter build apk --release
 
       - name: Upload to Telegram
+        working-directory: source
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
