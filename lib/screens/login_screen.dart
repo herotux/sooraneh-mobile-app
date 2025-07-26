@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
-import 'package:sooraneh_mobile/screens/home_screen.dart';
-import 'package:sooraneh_mobile/services/api_service.dart';
-import 'package:sooraneh_mobile/utils/jwt_storage.dart';
-import 'package:sooraneh_mobile/utils/log_service.dart';
+import 'package:daric/screens/home_screen.dart';
+import 'package:daric/services/api_service.dart';
+import 'package:daric/utils/jwt_storage.dart';
+import 'package:daric/utils/log_service.dart';
 
 
 

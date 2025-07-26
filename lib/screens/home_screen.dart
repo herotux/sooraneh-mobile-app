@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:sooraneh_mobile/screens/income_screen.dart';
-import 'package:sooraneh_mobile/screens/expense_screen.dart';
-import 'package:sooraneh_mobile/screens/settings_screen.dart';
-import 'package:sooraneh_mobile/utils/jwt_storage.dart';
+import 'package:daric/screens/income_screen.dart';
+import 'package:daric/screens/expense_screen.dart';
+import 'package:daric/screens/settings_screen.dart';
+import 'package:daric/utils/jwt_storage.dart';
 
 class HomeScreen extends StatefulWidget {
   @override

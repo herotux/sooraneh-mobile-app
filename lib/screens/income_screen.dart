@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shamsi_date/shamsi_date.dart';
-import 'package:sooraneh_mobile/models/income.dart'; // یا expense.dart
-import 'package:sooraneh_mobile/services/api_service.dart';
+import 'package:daric/models/income.dart'; // یا expense.dart
+import 'package:daric/services/api_service.dart';
 
 class IncomeScreen extends StatefulWidget {
   @override

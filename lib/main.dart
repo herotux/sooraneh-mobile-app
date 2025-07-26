@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:sooraneh_mobile/theme/app_theme.dart';
-import 'package:sooraneh_mobile/screens/login_screen.dart';
-import 'package:sooraneh_mobile/screens/home_screen.dart';
-import 'package:sooraneh_mobile/utils/jwt_storage.dart';
+import 'package:daric/theme/app_theme.dart';
+import 'package:daric/screens/login_screen.dart';
+import 'package:daric/screens/home_screen.dart';
+import 'package:daric/utils/jwt_storage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

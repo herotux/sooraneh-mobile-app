@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sooraneh_mobile/utils/log_service.dart';
+import 'package:daric/utils/log_service.dart';
 
 class LogScreen extends StatefulWidget {
   @override

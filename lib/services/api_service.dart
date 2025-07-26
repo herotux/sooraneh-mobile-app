@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:sooraneh_mobile/utils/jwt_storage.dart';
+import 'package:daric/utils/jwt_storage.dart';
 
 class ApiService {
   static const String baseUrl = 'https://freetux.pythonanywhere.com/api';
