@@ -6,6 +6,13 @@ import 'package:daric/screens/home_screen.dart';
 import 'package:daric/screens/category_screen.dart';
 import 'package:daric/screens/add_category_screen.dart';
 import 'package:daric/utils/jwt_storage.dart';
+import 'package:daric/screens/debt_list_screen.dart';
+import 'package:daric/screens/edit_debt_screen.dart';
+import 'package:daric/screens/credit_list_screen.dart';
+import 'package:daric/screens/edit_credit_screen.dart';
+import 'package:daric/models/credit.dart';
+import 'package:daric/models/debt.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,6 +47,19 @@ class MyApp extends StatelessWidget {
         '/home': (context) => HomeScreen(),
         '/categories': (context) => CategoryScreen(),
         '/add-category': (context) => AddCategoryScreen(),
+        '/credit-list': (context) => CreditListScreen(),
+        '/add-credit': (context) => AddCreditScreen(),
+        '/edit-credit': (context) {
+          final credit = ModalRoute.of(context)!.settings.arguments as Credit;
+          return EditCreditScreen(credit: credit);
+        },
+        '/debt-list': (context) => DebtListScreen(),
+        '/add-debt': (context) => AddDebtScreen(),
+        '/debts/edit': (context) {
+          final debt = ModalRoute.of(context)!.settings.arguments as Debt;
+          return EditDebtScreen(debt: debt);
+        },
+        
       },
     );
   }

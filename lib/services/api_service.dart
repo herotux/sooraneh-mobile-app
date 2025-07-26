@@ -186,6 +186,79 @@ Future<bool> deleteCategory(int id) async {
     );
   }
 
+  // دریافت لیست طلب ها
+  Future<List<Credit>> getCredits() async {
+    final response = await http.get(Uri.parse('$baseUrl/credits/'));
+    if (response.statusCode == 200) {
+      final List jsonData = json.decode(response.body);
+      return jsonData.map((item) => Credit.fromJson(item)).toList();
+    } else {
+      throw Exception('Failed to load credits');
+    }
+  }
+
+  // افزودن طلب جدید
+  Future<bool> addCredit(Credit credit) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/credits/'),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode(credit.toJson()),
+    );
+    return response.statusCode == 201;
+  }
+
+  // حذف طلب
+  Future<bool> deleteCredit(int id) async {
+    final response = await http.delete(Uri.parse('$baseUrl/credits/$id/'));
+    return response.statusCode == 204; // 204 یعنی حذف موفق
+  }
+
+  // ویرایش طلب (PUT)
+  Future<bool> updateCredit(Credit credit) async {
+    final response = await http.put(
+      Uri.parse('$baseUrl/credits/${credit.id}/'),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode(credit.toJson()),
+    );
+    return response.statusCode == 200;
+  }
+  // دریافت لیست بدهی‌ها
+  Future<List<Debt>> getDebts() async {
+    final response = await http.get(Uri.parse('$baseUrl/debts/'));
+    if (response.statusCode == 200) {
+      final List jsonData = json.decode(response.body);
+      return jsonData.map((item) => Debt.fromJson(item)).toList();
+    } else {
+      throw Exception('Failed to load debts');
+    }
+  }
+
+  // افزودن بدهی جدید
+  Future<bool> addDebt(Debt debt) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/debts/'),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode(debt.toJson()),
+    );
+    return response.statusCode == 201;
+  }
+
+  // حذف بدهی
+  Future<bool> deleteDebt(int id) async {
+    final response = await http.delete(Uri.parse('$baseUrl/debts/$id/'));
+    return response.statusCode == 204;
+  }
+
+  // ویرایش بدهی (PUT)
+  Future<bool> updateDebt(Debt debt) async {
+    final response = await http.put(
+      Uri.parse('$baseUrl/debts/${debt.id}/'),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode(debt.toJson()),
+    );
+    return response.statusCode == 200;
+  }
+
 }
 
 
