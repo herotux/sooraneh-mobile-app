@@ -21,6 +21,13 @@ jobs:
       - name: Create new Flutter project
         run: flutter create daric_app
 
+
+
+
+      - name: Add INTERNET permission to AndroidManifest.xml
+        run: |
+          sed -i '/<manifest/a\  <uses-permission android:name="android.permission.INTERNET" />' daric_app/android/app/src/main/AndroidManifest.xml
+
       - name: Set app name in strings.xml (فارسی و انگلیسی)
         run: |
           STRINGS_FILE=daric_app/android/app/src/main/res/values/strings.xml
@@ -31,26 +38,6 @@ jobs:
             echo '    <string name="app_name">دریک | Daric</string>' >> "$STRINGS_FILE"
             echo '</resources>' >> "$STRINGS_FILE"
           else
-            sed -i 's|<string name="app_name">.*</string>|<string name="app_name">دریک | Daric</string>|' "$STRINGS_FILE"
-          fi
-
-
-      - name: Add INTERNET permission to AndroidManifest.xml
-        run: |
-          sed -i '/<manifest/a\  <uses-permission android:name="android.permission.INTERNET" />' daric_app/android/app/src/main/AndroidManifest.xml
-
-      - name: Set app name in strings.xml (فارسی و انگلیسی)
-        run: |
-          STRINGS_FILE=daric_app/android/app/src/main/res/values/strings.xml
-          # اگر فایل وجود نداشت بساز
-          if [ ! -f "$STRINGS_FILE" ]; then
-            mkdir -p $(dirname "$STRINGS_FILE")
-            echo '<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="app_name">دریک | Daric</string>
-</resources>' > "$STRINGS_FILE"
-          else
-            # اگر بود، مقدار app_name رو جایگزین کن
             sed -i 's|<string name="app_name">.*</string>|<string name="app_name">دریک | Daric</string>|' "$STRINGS_FILE"
           fi
 
