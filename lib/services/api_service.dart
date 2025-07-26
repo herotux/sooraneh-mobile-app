@@ -86,7 +86,8 @@ class ApiService {
     );
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      final decodedBody = utf8.decode(response.bodyBytes);
+      return jsonDecode(decodedBody);
     }
     return null;
   }
@@ -101,7 +102,8 @@ class ApiService {
     );
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      final decodedBody = utf8.decode(response.bodyBytes);
+      return jsonDecode(decodedBody);
     }
     return null;
   }
