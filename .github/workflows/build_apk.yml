@@ -8,6 +8,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: source
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -17,6 +21,9 @@ jobs:
         with:
           flutter-version: '3.19.0'
           channel: 'stable'
+
+      - name: Create Flutter project structure
+        run: flutter create .
 
       - name: Get dependencies
         run: flutter pub get
