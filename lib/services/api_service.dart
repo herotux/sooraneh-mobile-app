@@ -2,7 +2,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:daric/utils/jwt_storage.dart';
 import 'package:daric/models/category.dart';
-
+import 'package:daric/models/credit.dart';
+import 'package:daric/models/debt.dart';
 
 class ApiService {
   static const String baseUrl = 'https://freetux.pythonanywhere.com/api';
@@ -156,21 +157,6 @@ Future<bool> deleteCategory(int id) async {
     return response.statusCode == 204;
   }
 
-  Future<List<Category>> getCategories() async {
-    final token = await JwtStorage.getToken();
-    if (token == null) return [];
-
-    final response = await http.get(
-      Uri.parse('$baseUrl/v1/categories/'),
-      headers: {'Authorization': 'Bearer $token'},
-    );
-
-    if (response.statusCode == 200) {
-      final List<dynamic> body = jsonDecode(response.body);
-      return body.map((e) => Category.fromJson(e)).toList();
-    }
-    return [];
-  }
 
   Future<void> updateCategory(int id, Map<String, dynamic> data) async {
     final token = await JwtStorage.getToken();
