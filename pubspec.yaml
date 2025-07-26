@@ -27,6 +27,11 @@ flutter:
   assets:
     - assets/images/
 
+  fonts:
+  - family: Vazirmatn
+    fonts:
+      - asset: assets/fonts/Vazir-Regular.ttf
+
 
 flutter_launcher_icons:
   android: true

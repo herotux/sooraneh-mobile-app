@@ -1,4 +1,4 @@
-name: Build Flutter APK with Android folder
+name: Build Flutter APK
 
 on:
   push:
@@ -18,35 +18,53 @@ jobs:
           flutter-version: '3.19.0'
           channel: 'stable'
 
-      - name: Create temporary Flutter project
-        run: flutter create temp_app
+      - name: Create new Flutter project
+        run: flutter create daric_app
 
       - name: Replace lib, assets, and pubspec.yaml
         run: |
-          rm -rf temp_app/lib temp_app/assets temp_app/pubspec.yaml
-          cp -r lib temp_app/lib
-          cp -r assets temp_app/assets
-          cp pubspec.yaml temp_app/pubspec.yaml
+          rm -rf daric_app/lib daric_app/assets daric_app/pubspec.yaml
+          cp -r lib daric_app/lib
+          cp -r assets daric_app/assets
+          cp pubspec.yaml daric_app/pubspec.yaml
 
       - name: Add INTERNET permission to AndroidManifest.xml
         run: |
-          sed -i '/<manifest/a\  <uses-permission android:name="android.permission.INTERNET" />' temp_app/android/app/src/main/AndroidManifest.xml
+          sed -i '/<manifest/a\  <uses-permission android:name="android.permission.INTERNET" />' daric_app/android/app/src/main/AndroidManifest.xml
+
+      - name: Set app name in strings.xml (فارسی و انگلیسی)
+        run: |
+          STRINGS_FILE=daric_app/android/app/src/main/res/values/strings.xml
+          # اگر فایل وجود نداشت بساز
+          if [ ! -f "$STRINGS_FILE" ]; then
+            mkdir -p $(dirname "$STRINGS_FILE")
+            echo '<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">دریک | Daric</string>
+</resources>' > "$STRINGS_FILE"
+          else
+            # اگر بود، مقدار app_name رو جایگزین کن
+            sed -i 's|<string name="app_name">.*</string>|<string name="app_name">دریک | Daric</string>|' "$STRINGS_FILE"
+          fi
 
       - name: Get dependencies
-        working-directory: temp_app
+        working-directory: daric_app
         run: flutter pub get
 
+      - name: Generate app icon
+        working-directory: daric_app
+        run: flutter pub run flutter_launcher_icons:main
+
       - name: Build APK (release)
-        working-directory: temp_app
+        working-directory: daric_app
         run: flutter build apk --release
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-release-apk
-          path: temp_app/build/app/outputs/flutter-apk/app-release.apk
+          path: daric_app/build/app/outputs/flutter-apk/app-release.apk
 
-      # Optional: send APK to Telegram
       - name: Send APK to Telegram
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
@@ -56,8 +74,7 @@ jobs:
             echo "Telegram secrets not set, skipping upload."
             exit 0
           fi
-
-          curl -F document=@temp_app/build/app/outputs/flutter-apk/app-release.apk \
-              -F chat_id=$TELEGRAM_CHAT_ID \
-              -F caption="🚀 نسخه جدید اپ منتشر شد" \
-              https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendDocument
+          curl -F document=@daric_app/build/app/outputs/flutter-apk/app-release.apk \
+               -F chat_id=$TELEGRAM_CHAT_ID \
+               -F caption="🚀 نسخه جدید اپ منتشر شد" \
+               https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendDocument
