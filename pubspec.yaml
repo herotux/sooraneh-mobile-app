@@ -1,5 +1,5 @@
-name: sooraneh_mobile
-description: مدیریت مالی شخصی و خانوادگی - Sooraneh
+name: daric
+description: مدیریت مالی شخصی و خانوادگی - daric
 publish_to: 'none'
 version: 1.0.0+1
 
@@ -26,3 +26,9 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+
+
+flutter_launcher_icons:
+  android: true
+  image_path: "assets/icon/daric_icon.png"
+  min_sdk_android: 21

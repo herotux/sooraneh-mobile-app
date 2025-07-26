@@ -8,7 +8,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    # حذف working-directory چون دایرکتوری source وجود نداره
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -19,15 +18,23 @@ jobs:
           flutter-version: '3.19.0'
           channel: 'stable'
 
-      - name: Create Flutter project structure
-        run: flutter create .
+      - name: Create project structure (if missing)
+        run: flutter create --project-name daric .
+
+      - name: Overwrite default files with your code
+        run: |
+          rm -rf lib/ pubspec.yaml assets/
+          cp -r ./lib ./assets ./pubspec.yaml ./
 
       - name: Get dependencies
         run: flutter pub get
 
       - name: Add INTERNET permission
         run: |
-          sed -i '/<manifest/a\  <uses-permission android:name="android.permission.INTERNET"/>' android/app/src/main/AndroidManifest.xml
+          sed -i '/<manifest/a\  <uses-permission android:name="android.permission.INTERNET"/>' android/app/src/main/AndroidManifest.xml || true
+
+      - name: Generate app icon
+        run: flutter pub run flutter_launcher_icons:main
 
       - name: Build APK
         run: flutter build apk --release
@@ -39,5 +46,5 @@ jobs:
         run: |
           curl -F document=@build/app/outputs/flutter-apk/app-release.apk \
                -F chat_id=$TELEGRAM_CHAT_ID \
-               -F caption="📦 نسخه جدید سورانه آپلود شد." \
+               -F caption="📦 نسخه جدید دریک منتشر شد!" \
                https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendDocument
