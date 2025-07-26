@@ -21,7 +21,7 @@ jobs:
       - name: Create new Flutter project
         run: flutter create daric_app
 
-       - name: Replace source files
+      - name: Replace source files
         run: |
           rm -rf daric_app/lib daric_app/assets daric_app/pubspec.yaml
           cp -r lib daric_app/lib
