@@ -25,6 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   // تابع ارسال درخواست لاگین به API
   Future<bool> _login() async {
+    // 🔴 توجه: فاصله اضافی در انتهای URL حذف شد
     final url = Uri.parse('https://freetux.pythonanywhere.com/api/auth/login/');
     final body = {
       'username': _usernameController.text.trim(),
@@ -137,7 +138,6 @@ class _LoginScreenState extends State<LoginScreen> {
               SizedBox(height: 16),
               TextButton(
                 onPressed: () {
-                  // Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterScreen()));
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('صفحه ثبت‌نام هنوز پیاده‌سازی نشده')),
                   );
