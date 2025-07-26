@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sooraneh_mobile/theme/app_theme.dart';
 import 'package:sooraneh_mobile/screens/login_screen.dart';
 import 'package:sooraneh_mobile/screens/home_screen.dart';
 import 'package:sooraneh_mobile/utils/jwt_storage.dart';
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Sooraneh',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(primarySwatch: Colors.blue),
+      theme: AppTheme.lightTheme,
       initialRoute: initialRoute,
       routes: {
         '/login': (context) => LoginScreen(),
