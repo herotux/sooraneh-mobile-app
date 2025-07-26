@@ -11,6 +11,7 @@ class _AddDebtScreenState extends State<AddDebtScreen> {
   final _formKey = GlobalKey<FormState>();
   final _personController = TextEditingController();
   final _amountController = TextEditingController();
+  final _descriptionController = TextEditingController();
   DateTime? _date;
   DateTime? _payDate;
   bool _isLoading = false;
@@ -22,7 +23,7 @@ class _AddDebtScreenState extends State<AddDebtScreen> {
       initialDate: DateTime.now(),
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
-      locale: Locale('fa'),
+      locale: const Locale('fa'),
     );
     if (picked != null) {
       setState(() {
@@ -49,7 +50,7 @@ class _AddDebtScreenState extends State<AddDebtScreen> {
       amount: int.parse(_amountController.text.trim()),
       date: _date!,
       payDate: _payDate!,
-      description: null,
+      description: _descriptionController.text.trim(),
     );
 
     final success = await ApiService().addDebt(debt);
@@ -62,6 +63,7 @@ class _AddDebtScreenState extends State<AddDebtScreen> {
     if (success) {
       _personController.clear();
       _amountController.clear();
+      _descriptionController.clear();
       _date = null;
       _payDate = null;
       FocusScope.of(context).unfocus();
@@ -69,11 +71,19 @@ class _AddDebtScreenState extends State<AddDebtScreen> {
   }
 
   @override
+  void dispose() {
+    _personController.dispose();
+    _amountController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('افزودن بدهی')),
       body: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
           child: ListView(
@@ -90,18 +100,28 @@ class _AddDebtScreenState extends State<AddDebtScreen> {
                 decoration: InputDecoration(labelText: 'مبلغ'),
                 validator: (val) {
                   if (val == null || val.isEmpty) return 'مبلغ را وارد کنید';
-                  if (int.tryParse(val) == null) return 'مبلغ باید عدد باشد';
+                  if (int.tryParse(val) == null || int.parse(val) <= 0) return 'مبلغ باید عدد صحیح مثبت باشد';
                   return null;
                 },
               ),
               SizedBox(height: 16),
+              TextFormField(
+                controller: _descriptionController,
+                decoration: InputDecoration(labelText: 'توضیحات'),
+                validator: (val) => val == null || val.isEmpty ? 'توضیحات را وارد کنید' : null,
+              ),
+              SizedBox(height: 16),
               ListTile(
-                title: Text(_date == null ? 'تاریخ ثبت' : 'تاریخ ثبت: ${_date!.toLocal().toString().split(' ')[0]}'),
+                title: Text(_date == null
+                    ? 'تاریخ ثبت'
+                    : 'تاریخ ثبت: ${_date!.toLocal().toString().split(' ')[0]}'),
                 trailing: Icon(Icons.calendar_today),
                 onTap: () => _pickDate(context, false),
               ),
               ListTile(
-                title: Text(_payDate == null ? 'تاریخ بازپرداخت' : 'تاریخ بازپرداخت: ${_payDate!.toLocal().toString().split(' ')[0]}'),
+                title: Text(_payDate == null
+                    ? 'تاریخ بازپرداخت'
+                    : 'تاریخ بازپرداخت: ${_payDate!.toLocal().toString().split(' ')[0]}'),
                 trailing: Icon(Icons.calendar_today),
                 onTap: () => _pickDate(context, true),
               ),
@@ -117,7 +137,9 @@ class _AddDebtScreenState extends State<AddDebtScreen> {
                 SizedBox(height: 16),
                 Text(
                   _message!,
-                  style: TextStyle(color: _message!.contains('موفق') ? Colors.green : Colors.red),
+                  style: TextStyle(
+                    color: _message!.contains('موفق') ? Colors.green : Colors.red,
+                  ),
                 ),
               ],
             ],

@@ -3,9 +3,6 @@ import 'package:daric/models/debt.dart';
 import 'package:daric/services/api_service.dart';
 import 'package:daric/widgets/persian_date_picker.dart';
 
-
-
-
 class EditDebtScreen extends StatefulWidget {
   final Debt debt;
 
@@ -17,7 +14,7 @@ class EditDebtScreen extends StatefulWidget {
 
 class _EditDebtScreenState extends State<EditDebtScreen> {
   final _formKey = GlobalKey<FormState>();
-  late TextEditingController _textController;
+  late TextEditingController _descriptionController;
   late TextEditingController _amountController;
   DateTime? _date;
   DateTime? _payDate;
@@ -26,7 +23,7 @@ class _EditDebtScreenState extends State<EditDebtScreen> {
   @override
   void initState() {
     super.initState();
-    _textController = TextEditingController(text: widget.debt.text);
+    _descriptionController = TextEditingController(text: widget.debt.description);
     _amountController = TextEditingController(text: widget.debt.amount.toString());
     _date = widget.debt.date;
     _payDate = widget.debt.payDate;
@@ -34,7 +31,7 @@ class _EditDebtScreenState extends State<EditDebtScreen> {
 
   @override
   void dispose() {
-    _textController.dispose();
+    _descriptionController.dispose();
     _amountController.dispose();
     super.dispose();
   }
@@ -45,10 +42,11 @@ class _EditDebtScreenState extends State<EditDebtScreen> {
     final updatedDebt = Debt(
       id: widget.debt.id,
       personName: widget.debt.personName,
-      text: _textController.text.trim(),
+      description: _descriptionController.text.trim(),
       amount: int.parse(_amountController.text.trim()),
       date: _date ?? DateTime.now(),
       payDate: _payDate ?? DateTime.now(),
+      personId: widget.debt.personId,
     );
 
     final success = await _apiService.updateDebt(updatedDebt);
@@ -76,7 +74,7 @@ class _EditDebtScreenState extends State<EditDebtScreen> {
           child: ListView(
             children: [
               TextFormField(
-                controller: _textController,
+                controller: _descriptionController,
                 decoration: InputDecoration(labelText: 'توضیحات'),
                 validator: (val) => val == null || val.isEmpty ? 'وارد کردن توضیحات الزامی است' : null,
               ),

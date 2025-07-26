@@ -16,7 +16,6 @@ import 'package:daric/models/credit.dart';
 import 'package:daric/models/debt.dart';
 import 'package:daric/screens/add_credit_screen.dart';
 import 'package:daric/screens/add_debt_screen.dart';
-import 'package:daric/screens/credits_list_screen.dart';
 
 
 
@@ -57,7 +56,7 @@ class MyApp extends StatelessWidget {
         '/income-list': (context) => IncomeScreen(),
         '/categories': (context) => CategoriesScreen(),
         '/add-category': (context) => AddCategoryScreen(),
-        '/credit-list': (context) => CreditListScreen(),
+        '/credit-list': (context) => CreditsListScreen(),
         '/add-credit': (context) => AddCreditScreen(),
         '/edit-credit': (context) {
           final credit = ModalRoute.of(context)!.settings.arguments as Credit;

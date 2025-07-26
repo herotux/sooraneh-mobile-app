@@ -26,21 +26,33 @@ class _MyDatePickerState extends State<MyDatePicker> {
     _selectedDate = widget.initialDate ?? DateTime.now();
   }
 
+  Future<void> _showPicker() async {
+    final picked = await showDatePickerDialog(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime(1300, 1, 1),
+      lastDate: DateTime(1500, 12, 29),
+      datePickerType: DatePickerType.Persian,
+    );
+
+    if (picked != null) {
+      setState(() => _selectedDate = picked);
+      widget.onDateChanged(picked);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(widget.label, style: TextStyle(fontWeight: FontWeight.bold)),
-        SizedBox(height: 8),
-        DatePicker(
-          initialDate: _selectedDate,
-          mode: DatePickerMode.date,
-          datePickerType: DatePickerType.Persian, // تاریخ شمسی
-          onChanged: (date) {
-            setState(() => _selectedDate = date);
-            widget.onDateChanged(date);
-          },
+        Text(widget.label, style: const TextStyle(fontWeight: FontWeight.bold)),
+        const SizedBox(height: 8),
+        ElevatedButton(
+          onPressed: _showPicker,
+          child: Text(
+            'انتخاب تاریخ: ${_selectedDate.toLocal().toString().split(' ')[0]}',
+          ),
         ),
       ],
     );

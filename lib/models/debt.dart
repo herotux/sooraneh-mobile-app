@@ -2,7 +2,7 @@ class Debt {
   final int? id;
   final String personName;
   final int amount;
-  final String text;
+  final String description;   // نام فیلد تغییر کرد به description
   final DateTime date;
   final DateTime payDate;
   final int? personId;
@@ -11,7 +11,7 @@ class Debt {
     this.id,
     required this.personName,
     required this.amount,
-    required this.text,
+    required this.description,
     required this.date,
     required this.payDate,
     this.personId,
@@ -19,9 +19,9 @@ class Debt {
 
   factory Debt.fromJson(Map<String, dynamic> json) => Debt(
         id: json['id'],
-        personName: json['person_name'] ?? '',  // فرض می‌کنیم کلید person_name در JSON هست
+        personName: json['person_name'] ?? '',
         amount: json['amount'],
-        text: json['text'],
+        description: json['text'],
         date: DateTime.parse(json['date']),
         payDate: DateTime.parse(json['pay_date']),
         personId: json['person'],
@@ -31,7 +31,7 @@ class Debt {
         if (id != null) 'id': id,
         'person_name': personName,
         'amount': amount,
-        'text': text,
+        'text': description,                 
         'date': date.toIso8601String(),
         'pay_date': payDate.toIso8601String(),
         'person': personId,

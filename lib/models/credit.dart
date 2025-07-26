@@ -21,7 +21,7 @@ class Credit {
         amount: json['amount'],
         date: DateTime.parse(json['date']),
         payDate: DateTime.parse(json['pay_date']),
-        description: json['description'],
+        description: json['text'],
       );
 
   Map<String, dynamic> toJson() => {
@@ -30,6 +30,6 @@ class Credit {
         'amount': amount,
         'date': date.toIso8601String(),
         'pay_date': payDate.toIso8601String(),
-        'description': description,
+        'text': description,
       };
 }
