@@ -29,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('سورانه'),
+        title: Text('دریک'),
         actions: [
           IconButton(
             icon: Icon(Icons.logout),
@@ -62,7 +62,7 @@ class DashboardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Text(
-        'خوش آمدید به داشبورد سورانه',
+        'خوش آمدید به داشبورد دریک',
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
     );
