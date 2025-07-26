@@ -8,10 +8,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: source
-
+    # حذف working-directory چون دایرکتوری source وجود نداره
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
