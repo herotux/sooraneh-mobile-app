@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart'; // اضافه شد
 import 'package:daric/theme/app_theme.dart';
 import 'package:daric/screens/login_screen.dart';
 import 'package:daric/screens/home_screen.dart';
+import 'package:daric/screens/category_screen.dart';
+import 'package:daric/screens/add_category_screen.dart';
 import 'package:daric/utils/jwt_storage.dart';
 
 void main() async {
@@ -18,6 +21,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      locale: const Locale('fa'),
+      supportedLocales: const [
+        Locale('fa'),
+        Locale('en'),
+      ],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       title: 'دریک',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
