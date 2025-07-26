@@ -21,12 +21,20 @@ jobs:
       - name: Create new Flutter project
         run: flutter create daric_app
 
-      - name: Replace lib, assets, and pubspec.yaml
+      - name: Set app name in strings.xml (فارسی و انگلیسی)
         run: |
-          rm -rf daric_app/lib daric_app/assets daric_app/pubspec.yaml
-          cp -r lib daric_app/lib
-          cp -r assets daric_app/assets
-          cp pubspec.yaml daric_app/pubspec.yaml
+          STRINGS_FILE=daric_app/android/app/src/main/res/values/strings.xml
+          if [ ! -f "$STRINGS_FILE" ]; then
+            mkdir -p $(dirname "$STRINGS_FILE")
+            cat <<EOF > "$STRINGS_FILE"
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">دریک | Daric</string>
+</resources>
+EOF
+          else
+            sed -i 's|<string name="app_name">.*</string>|<string name="app_name">دریک | Daric</string>|' "$STRINGS_FILE"
+          fi
 
       - name: Add INTERNET permission to AndroidManifest.xml
         run: |
