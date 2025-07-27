@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:daric/models/debt.dart';
 import 'package:daric/services/api_service.dart';
-import 'package:daric/widgets/persian_date_picker.dart';
+import 'package:daric/widgets/my_date_picker.dart';
 
 class EditDebtScreen extends StatefulWidget {
   final Debt debt;
@@ -16,9 +16,12 @@ class _EditDebtScreenState extends State<EditDebtScreen> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _descriptionController;
   late TextEditingController _amountController;
-  DateTime? _date;
-  DateTime? _payDate;
+
+  late DateTime _date;
+  late DateTime _payDate;
+
   final ApiService _apiService = ApiService();
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -39,28 +42,27 @@ class _EditDebtScreenState extends State<EditDebtScreen> {
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
+    setState(() => _isLoading = true);
+
     final updatedDebt = Debt(
       id: widget.debt.id,
       personName: widget.debt.personName,
       description: _descriptionController.text.trim(),
       amount: int.parse(_amountController.text.trim()),
-      date: _date ?? DateTime.now(),
-      payDate: _payDate ?? DateTime.now(),
+      date: _date,
+      payDate: _payDate,
       personId: widget.debt.personId,
     );
 
     final success = await _apiService.updateDebt(updatedDebt);
 
-    if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('بدهی با موفقیت ویرایش شد')),
-      );
-      Navigator.of(context).pop(true);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('خطا در ویرایش بدهی')),
-      );
-    }
+    setState(() => _isLoading = false);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(success ? 'بدهی با موفقیت ویرایش شد' : 'خطا در ویرایش بدهی')),
+    );
+
+    if (success) Navigator.of(context).pop(true);
   }
 
   @override
@@ -78,6 +80,7 @@ class _EditDebtScreenState extends State<EditDebtScreen> {
                 decoration: InputDecoration(labelText: 'توضیحات'),
                 validator: (val) => val == null || val.isEmpty ? 'وارد کردن توضیحات الزامی است' : null,
               ),
+              const SizedBox(height: 16),
               TextFormField(
                 controller: _amountController,
                 decoration: InputDecoration(labelText: 'مبلغ'),
@@ -89,23 +92,32 @@ class _EditDebtScreenState extends State<EditDebtScreen> {
                   return null;
                 },
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 24),
+
+              /// انتخاب تاریخ بدهی
               MyDatePicker(
-                initialDate: _date,
                 label: 'تاریخ بدهی',
-                onDateChanged: (date) => _date = date,
+                initialDate: _date,
+                onDateChanged: (newDate) => setState(() => _date = newDate),
               ),
-              SizedBox(height: 16),
+
+              const SizedBox(height: 24),
+
+              /// انتخاب تاریخ پرداخت
               MyDatePicker(
-                initialDate: _payDate,
                 label: 'تاریخ پرداخت',
-                onDateChanged: (date) => _payDate = date,
+                initialDate: _payDate,
+                onDateChanged: (newDate) => setState(() => _payDate = newDate),
               ),
-              SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: _submit,
-                child: Text('ذخیره تغییرات'),
-              ),
+
+              const SizedBox(height: 32),
+
+              _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : ElevatedButton(
+                      onPressed: _submit,
+                      child: Text('ذخیره تغییرات'),
+                    ),
             ],
           ),
         ),
