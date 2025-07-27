@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:daric/models/debt.dart';
 import 'package:daric/services/api_service.dart';
+import 'package:daric/widgets/my_date_picker.dart';
 
 class AddDebtScreen extends StatefulWidget {
   @override
@@ -16,25 +17,6 @@ class _AddDebtScreenState extends State<AddDebtScreen> {
   DateTime? _payDate;
   bool _isLoading = false;
   String? _message;
-
-  Future<void> _pickDate(BuildContext context, bool isPayDate) async {
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-      locale: const Locale('fa'),
-    );
-    if (picked != null) {
-      setState(() {
-        if (isPayDate) {
-          _payDate = picked;
-        } else {
-          _date = picked;
-        }
-      });
-    }
-  }
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate() || _date == null || _payDate == null) return;
@@ -111,21 +93,27 @@ class _AddDebtScreenState extends State<AddDebtScreen> {
                 validator: (val) => val == null || val.isEmpty ? 'توضیحات را وارد کنید' : null,
               ),
               SizedBox(height: 16),
-              ListTile(
-                title: Text(_date == null
-                    ? 'تاریخ ثبت'
-                    : 'تاریخ ثبت: ${_date!.toLocal().toString().split(' ')[0]}'),
-                trailing: Icon(Icons.calendar_today),
-                onTap: () => _pickDate(context, false),
+
+              MyDatePicker(
+                label: 'تاریخ ثبت',
+                initialDate: _date,
+                onDateChanged: (selected) {
+                  setState(() => _date = selected);
+                },
               ),
-              ListTile(
-                title: Text(_payDate == null
-                    ? 'تاریخ بازپرداخت'
-                    : 'تاریخ بازپرداخت: ${_payDate!.toLocal().toString().split(' ')[0]}'),
-                trailing: Icon(Icons.calendar_today),
-                onTap: () => _pickDate(context, true),
+
+              SizedBox(height: 16),
+
+              MyDatePicker(
+                label: 'تاریخ بازپرداخت',
+                initialDate: _payDate,
+                onDateChanged: (selected) {
+                  setState(() => _payDate = selected);
+                },
               ),
+
               SizedBox(height: 24),
+
               if (_isLoading)
                 Center(child: CircularProgressIndicator())
               else
@@ -133,6 +121,7 @@ class _AddDebtScreenState extends State<AddDebtScreen> {
                   onPressed: _submit,
                   child: Text('ثبت بدهی'),
                 ),
+
               if (_message != null) ...[
                 SizedBox(height: 16),
                 Text(
