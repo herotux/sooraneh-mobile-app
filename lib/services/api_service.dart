@@ -285,6 +285,25 @@ class ApiService {
     return response.statusCode == 204;
   }
 
+  Future<bool> addIncome(Income income) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/incomes/'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(income.toJson()),
+    );
+    return response.statusCode == 201;
+  }
+
+  Future<bool> updateIncome(Income income) async {
+    final response = await http.put(
+      Uri.parse('$baseUrl/incomes/${income.id}/'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(income.toJson()),
+    );
+    return response.statusCode == 200;
+  }
+
+
 
   // ==== HEADERS ====
 

@@ -69,7 +69,7 @@ class _EditIncomeScreenState extends State<EditIncomeScreen> {
   @override
   Widget build(BuildContext context) {
     return MainScaffold(
-      appBar: AppBar(title: Text('ویرایش درآمد')),
+      title: 'ویرایش درآمد',
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(
