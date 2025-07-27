@@ -1,9 +1,8 @@
-name: Build and Deploy Flutter APK
+name: Build Flutter APK
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
   build:
@@ -13,21 +12,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Flutter environment
+      - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.19.0'
           channel: 'stable'
 
-      - name: Create new Flutter project scaffold
+      - name: Create new Flutter project
         run: flutter create daric_app
 
-      - name: Copy source files to project
+      - name: Replace source files
         run: |
           rm -rf daric_app/lib daric_app/assets daric_app/pubspec.yaml
           cp -r lib daric_app/lib
           cp -r assets daric_app/assets
           cp pubspec.yaml daric_app/pubspec.yaml
+
 
       - name: Add INTERNET permission to AndroidManifest.xml
         run: |
@@ -38,17 +38,15 @@ jobs:
           STRINGS_FILE=daric_app/android/app/src/main/res/values/strings.xml
           if [ ! -f "$STRINGS_FILE" ]; then
             mkdir -p $(dirname "$STRINGS_FILE")
-            cat <<EOF > "$STRINGS_FILE"
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="app_name">دریک | Daric</string>
-</resources>
-EOF
+            echo '<?xml version="1.0" encoding="utf-8"?>' > "$STRINGS_FILE"
+            echo '<resources>' >> "$STRINGS_FILE"
+            echo '    <string name="app_name">دریک | Daric</string>' >> "$STRINGS_FILE"
+            echo '</resources>' >> "$STRINGS_FILE"
           else
             sed -i 's|<string name="app_name">.*</string>|<string name="app_name">دریک | Daric</string>|' "$STRINGS_FILE"
           fi
 
-      - name: Get Flutter dependencies
+      - name: Get dependencies
         working-directory: daric_app
         run: flutter pub get
 
@@ -60,7 +58,7 @@ EOF
         working-directory: daric_app
         run: flutter build apk --release
 
-      - name: Upload APK artifact
+      - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-release-apk
