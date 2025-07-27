@@ -173,13 +173,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
     setState(() => _loading = true);
 
     final result = await _apiService.register(
-      _usernameController.text.trim(),
-      _emailController.text.trim(),
-      _firstNameController.text.trim(),
-      _lastNameController.text.trim(),
-      _passwordController.text,
-      _isAdmin,
+      username: _usernameController.text.trim(),
+      email: _emailController.text.trim(),
+      firstName: _firstNameController.text.trim(),
+      lastName: _lastNameController.text.trim(),
+      password: _passwordController.text,
+      isAdmin: _isAdmin,
     );
+
 
     setState(() => _loading = false);
 

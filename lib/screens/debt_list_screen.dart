@@ -17,7 +17,7 @@ class _DebtListScreenState extends State<DebtListScreen> {
     try {
       final debts = await _apiService.getDebts();
       setState(() {
-        _debts = debts;
+        _debts = debts ?? [];
         _isLoading = false;
       });
     } catch (e) {

@@ -21,7 +21,7 @@ class _CreditsListScreenState extends State<CreditsListScreen> {
     setState(() => _isLoading = true);
     final credits = await ApiService().getCredits();
     setState(() {
-      _credits = credits;
+      _credits = credits ?? [];
       _isLoading = false;
     });
   }
