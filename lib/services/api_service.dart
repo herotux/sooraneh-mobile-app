@@ -5,6 +5,8 @@ import 'package:daric/utils/network_utils.dart';
 import 'package:daric/models/category.dart';
 import 'package:daric/models/credit.dart';
 import 'package:daric/models/debt.dart';
+import 'package:daric/models/income.dart';
+import 'package:daric/models/expense.dart';
 
 class ApiService {
   static const String baseUrl = 'https://freetux.pythonanywhere.com/api';
@@ -287,7 +289,7 @@ class ApiService {
 
   Future<bool> addIncome(Income income) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/incomes/'),
+      Uri.parse('$baseUrl/v1/incomes/'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(income.toJson()),
     );
@@ -296,7 +298,7 @@ class ApiService {
 
   Future<bool> updateIncome(Income income) async {
     final response = await http.put(
-      Uri.parse('$baseUrl/incomes/${income.id}/'),
+      Uri.parse('$baseUrl/v1/incomes/${income.id}/'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(income.toJson()),
     );
