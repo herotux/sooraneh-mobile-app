@@ -39,11 +39,11 @@ jobs:
           if [ ! -f "$STRINGS_FILE" ]; then
             mkdir -p $(dirname "$STRINGS_FILE")
             cat <<EOF > "$STRINGS_FILE"
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="app_name">دریک | Daric</string>
-</resources>
-EOF
+            <?xml version="1.0" encoding="utf-8"?>
+            <resources>
+                <string name="app_name">دریک | Daric</string>
+            </resources>
+            EOF
           else
             sed -i 's|<string name="app_name">.*</string>|<string name="app_name">دریک | Daric</string>|' "$STRINGS_FILE"
           fi
