@@ -136,12 +136,14 @@ class _LoginScreenState extends State<LoginScreen> {
               SizedBox(height: 16),
               TextButton(
                 onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('صفحه ثبت‌نام هنوز پیاده‌سازی نشده')),
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => RegisterScreen()),
                   );
                 },
                 child: Text('حساب کاربری ندارید؟ ثبت‌نام کنید'),
               ),
+
             ],
           ),
         ),
