@@ -39,11 +39,11 @@ jobs:
           if [ ! -f "$STRINGS_FILE" ]; then
             mkdir -p $(dirname "$STRINGS_FILE")
             cat <<EOF > "$STRINGS_FILE"
-            <?xml version="1.0" encoding="utf-8"?>
-            <resources>
-                <string name="app_name">دریک | Daric</string>
-            </resources>
-            EOF
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">دریک | Daric</string>
+</resources>
+EOF
           else
             sed -i 's|<string name="app_name">.*</string>|<string name="app_name">دریک | Daric</string>|' "$STRINGS_FILE"
           fi
@@ -68,9 +68,10 @@ jobs:
 
       - name: Get last Git commit message
         id: get_commit
-        run: echo "message<<EOF" >> $GITHUB_OUTPUT
-             git log -1 --pretty=%B >> $GITHUB_OUTPUT
-             echo "EOF" >> $GITHUB_OUTPUT
+        run: |
+          echo "message<<EOF" >> $GITHUB_OUTPUT
+          git log -1 --pretty=%B >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Send APK to Telegram with commit message caption
         env:
