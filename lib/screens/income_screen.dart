@@ -45,7 +45,12 @@ class _IncomeScreenState extends State<IncomeScreen> {
           return Center(child: CircularProgressIndicator());
 
         if (!snapshot.hasData || snapshot.data!.isEmpty)
-          return Center(child: Text('درآمدی وجود ندارد'));
+          return Center(
+            child: Text(
+              'درآمدی وجود ندارد',
+              style: TextStyle(fontSize: 16, color: Colors.black),
+            ),
+          );
 
         return ListView.builder(
           padding: EdgeInsets.all(12),
