@@ -3,8 +3,6 @@ import 'package:daric/models/credit.dart';
 import 'package:daric/services/api_service.dart';
 import 'package:daric/widgets/main_scaffold.dart';
 
-
-
 class CreditsListScreen extends StatefulWidget {
   @override
   State<CreditsListScreen> createState() => _CreditsListScreenState();
@@ -36,10 +34,12 @@ class _CreditsListScreenState extends State<CreditsListScreen> {
         _credits.removeAt(index);
       });
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('اعتبار حذف شد')));
+        SnackBar(content: Text('اعتبار حذف شد')),
+      );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('خطا در حذف اعتبار')));
+        SnackBar(content: Text('خطا در حذف اعتبار')),
+      );
       _fetchCredits(); // بارگذاری مجدد برای اطمینان
     }
   }
@@ -47,16 +47,7 @@ class _CreditsListScreenState extends State<CreditsListScreen> {
   @override
   Widget build(BuildContext context) {
     return MainScaffold(
-        title: Text('لیست اعتبارات'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () async {
-              final result = await Navigator.pushNamed(context, '/add-credit');
-              if (result == true) _fetchCredits();
-            },
-          ),
-        ],
+      title: 'لیست اعتبارات',
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
           : ListView.builder(
@@ -80,7 +71,6 @@ class _CreditsListScreenState extends State<CreditsListScreen> {
                   ),
                   confirmDismiss: (direction) async {
                     if (direction == DismissDirection.endToStart) {
-                      // حذف (کشیدن به چپ)
                       final confirm = await showDialog<bool>(
                         context: context,
                         builder: (ctx) => AlertDialog(
@@ -100,7 +90,6 @@ class _CreditsListScreenState extends State<CreditsListScreen> {
                       );
                       return confirm == true;
                     } else if (direction == DismissDirection.startToEnd) {
-                      // ویرایش (کشیدن به راست)
                       Navigator.pushNamed(context, '/edit-credit', arguments: credit)
                           .then((value) {
                         if (value == true) _fetchCredits();
@@ -116,15 +105,25 @@ class _CreditsListScreenState extends State<CreditsListScreen> {
                   },
                   child: ListTile(
                     title: Text('${credit.personName}'),
-                    subtitle: Text('مبلغ: ${credit.amount} تومان\nتاریخ: ${credit.date.toLocal().toString().split(' ')[0]}'),
-                    trailing: Text('تاریخ بازپرداخت:\n${credit.payDate.toLocal().toString().split(' ')[0]}'),
-                    onTap: () {
-                      // میتونی جزئیات نمایش بدی یا ویرایش هم اینجا بزنی
-                    },
+                    subtitle: Text(
+                      'مبلغ: ${credit.amount} تومان\nتاریخ: ${credit.date.toLocal().toString().split(' ')[0]}',
+                    ),
+                    trailing: Text(
+                      'تاریخ بازپرداخت:\n${credit.payDate.toLocal().toString().split(' ')[0]}',
+                      textAlign: TextAlign.end,
+                    ),
                   ),
                 );
               },
             ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final result = await Navigator.pushNamed(context, '/add-credit');
+          if (result == true) _fetchCredits();
+        },
+        child: Icon(Icons.add),
+        tooltip: 'افزودن اعتبار جدید',
+      ),
     );
   }
 }

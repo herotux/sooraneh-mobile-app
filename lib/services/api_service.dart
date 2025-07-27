@@ -305,6 +305,24 @@ class ApiService {
     return response.statusCode == 200;
   }
 
+  Future<bool> addExpense(Expense expense) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/v1/expenses/'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(expense.toJson()),
+    );
+    return response.statusCode == 201;
+  }
+
+  Future<bool> updateExpense(Expense expense) async {
+    final response = await http.put(
+      Uri.parse('$baseUrl/v1/expenses/${expense.id}/'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(expense.toJson()),
+    );
+    return response.statusCode == 200;
+  }
+
 
 
   // ==== HEADERS ====

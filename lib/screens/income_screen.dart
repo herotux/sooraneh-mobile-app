@@ -95,7 +95,7 @@ class _IncomeScreenState extends State<IncomeScreen> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: MainScaffold(
-        title: Text('درآمدها'),
+        title: 'درآمدها',
         body: _isLoading
             ? Center(child: CircularProgressIndicator())
             : _incomes.isEmpty

@@ -41,7 +41,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
       final expense = Expense(
         id: 0, // یا هر عدد موقتی که لازمه
         text: _description,
-        amount: _amount!,
+        amount: _amount!.toInt(),
         date: _selectedDate.toIso8601String(),
       );
 
