@@ -64,6 +64,10 @@ jobs:
           name: app-release-apk
           path: daric_app/build/app/outputs/flutter-apk/app-release.apk
 
+       - name: Get last commit message
+        id: get_commit
+        run: echo "::set-output name=message::$(git log -1 --pretty=%B)"
+
       - name: Send APK to Telegram
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
@@ -73,7 +77,10 @@ jobs:
             echo "Telegram secrets not set, skipping upload."
             exit 0
           fi
+          CAPTION="${{ steps.get_commit.outputs.message }}"
+          CAPTION=${CAPTION:0:1000}
+          echo "Sending file with caption: $CAPTION"
           curl -F document=@daric_app/build/app/outputs/flutter-apk/app-release.apk \
                -F chat_id=$TELEGRAM_CHAT_ID \
-               -F caption="🚀 نسخه جدید اپ منتشر شد" \
+               -F caption="$CAPTION" \
                https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendDocument

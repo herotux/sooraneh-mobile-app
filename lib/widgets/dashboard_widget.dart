@@ -76,6 +76,11 @@ class _DashboardWidgetState extends State<DashboardWidget> {
     return input;
   }
 
+  String _formatJalaliDate(String dateStr) {
+    final j = Jalali.fromDateTime(DateTime.parse(dateStr));
+    return '${_convertToPersianNumber(j.year.toString())}/${_convertToPersianNumber(j.month.toString().padLeft(2, '0'))}/${_convertToPersianNumber(j.day.toString().padLeft(2, '0'))}';
+  }
+
   Widget _buildBarChart() {
     List<BarChartGroupData> barGroups = List.generate(12, (i) =>
       BarChartGroupData(
@@ -158,14 +163,14 @@ class _DashboardWidgetState extends State<DashboardWidget> {
   Widget _buildExpenseItem(Expense e) => ListTile(
     leading: Icon(Icons.money_off, color: Colors.red[700]),
     title: Text(e.text, style: const TextStyle(fontWeight: FontWeight.bold)),
-    subtitle: Text(_convertToPersianNumber(Jalali.fromDateTime(DateTime.parse(e.date)).formatFullDate())),
+    subtitle: Text(_formatJalaliDate(e.date)),
     trailing: Text('${_convertToPersianNumber(e.amount.toString())} تومان', style: TextStyle(color: Colors.red[700])),
   );
 
   Widget _buildIncomeItem(Income i) => ListTile(
     leading: Icon(Icons.attach_money, color: Colors.green[700]),
     title: Text(i.text, style: const TextStyle(fontWeight: FontWeight.bold)),
-    subtitle: Text(_convertToPersianNumber(Jalali.fromDateTime(DateTime.parse(i.date)).formatFullDate())),
+    subtitle: Text(_formatJalaliDate(i.date)),
     trailing: Text('${_convertToPersianNumber(i.amount.toString())} تومان', style: TextStyle(color: Colors.green[700])),
   );
 

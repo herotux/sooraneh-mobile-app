@@ -4,8 +4,14 @@ import 'package:daric/utils/jwt_storage.dart';
 class MainScaffold extends StatefulWidget {
   final Widget body;
   final String title;
+  final Widget? floatingActionButton;
 
-  const MainScaffold({Key? key, required this.body, required this.title}) : super(key: key);
+  const MainScaffold({
+    Key? key,
+    required this.body,
+    required this.title,
+    this.floatingActionButton,
+  }) : super(key: key);
 
   @override
   State<MainScaffold> createState() => _MainScaffoldState();
@@ -23,8 +29,8 @@ class _MainScaffoldState extends State<MainScaffold> {
   ];
 
   void _onMenuItemTap(String route) {
-    Navigator.pop(context); // بستن Drawer
-    if (ModalRoute.of(context)!.settings.name != route) {
+    Navigator.pop(context);
+    if (ModalRoute.of(context)?.settings.name != route) {
       Navigator.pushReplacementNamed(context, route);
     }
   }
@@ -36,7 +42,7 @@ class _MainScaffoldState extends State<MainScaffold> {
         title: Text(widget.title),
         leading: Builder(
           builder: (context) => IconButton(
-            icon: Icon(Icons.menu),
+            icon: const Icon(Icons.menu),
             onPressed: () => Scaffold.of(context).openDrawer(),
           ),
         ),
@@ -47,7 +53,7 @@ class _MainScaffoldState extends State<MainScaffold> {
           children: [
             DrawerHeader(
               decoration: BoxDecoration(color: Theme.of(context).primaryColor),
-              child: Text(
+              child: const Text(
                 'منوی کاربری',
                 style: TextStyle(color: Colors.white, fontSize: 24),
               ),
@@ -57,10 +63,10 @@ class _MainScaffoldState extends State<MainScaffold> {
               title: Text(item.title),
               onTap: () => _onMenuItemTap(item.route),
             )),
-            Divider(),
+            const Divider(),
             ListTile(
-              leading: Icon(Icons.logout),
-              title: Text('خروج از حساب'),
+              leading: const Icon(Icons.logout),
+              title: const Text('خروج از حساب'),
               onTap: () async {
                 await JwtStorage.deleteToken();
                 Navigator.pushReplacementNamed(context, '/login');
@@ -70,6 +76,7 @@ class _MainScaffoldState extends State<MainScaffold> {
         ),
       ),
       body: widget.body,
+      floatingActionButton: widget.floatingActionButton,
     );
   }
 }

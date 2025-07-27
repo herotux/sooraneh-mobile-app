@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:shamsi_date/shamsi_date.dart';
 import 'package:daric/models/income.dart';
 import 'package:daric/services/api_service.dart';
-import 'add_income_screen.dart'; // فرض می‌کنم صفحه افزودن درآمد داری
-import 'edit_income_screen.dart'; // صفحه ویرایش درآمد
+import 'package:daric/widgets/main_scaffold.dart';
+import 'package:daric/screens/add_income_screen.dart';
+import 'package:daric/screens/edit_income_screen.dart';
+
+
 
 class IncomeScreen extends StatefulWidget {
   @override

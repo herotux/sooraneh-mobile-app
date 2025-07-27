@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:daric/utils/log_service.dart';
+import 'package:daric/widgets/main_scaffold.dart';
+
+
 
 class LogScreen extends StatefulWidget {
   @override

@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:daric/models/category.dart';
 import 'package:daric/services/api_service.dart';
 import 'edit_category_screen.dart';
+import 'package:daric/widgets/main_scaffold.dart';
+
+
 
 class CategoriesScreen extends StatefulWidget {
   @override
