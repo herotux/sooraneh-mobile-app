@@ -274,6 +274,18 @@ class ApiService {
     return response.statusCode == 200;
   }
 
+
+  Future<bool> deleteIncome(int id) async {
+    final response = await http.delete(Uri.parse('$baseUrl/v1/incomes/$id/'));
+    return response.statusCode == 204;
+  }
+
+  Future<bool> deleteExpense(int id) async {
+    final response = await http.delete(Uri.parse('$baseUrl/v1/expenses/$id/'));
+    return response.statusCode == 204;
+  }
+
+
   // ==== HEADERS ====
 
   Map<String, String> _jsonHeaders() => {

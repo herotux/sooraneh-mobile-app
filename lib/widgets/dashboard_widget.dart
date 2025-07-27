@@ -178,35 +178,40 @@ class _DashboardWidgetState extends State<DashboardWidget> {
     );
   }
 
-  Widget _buildExpenseItem(Expense expense) {
-    final jDate = Jalali.fromDateTime(expense.date);
-    final formattedDate = '${jDate.year}/${jDate.month.toString().padLeft(2, '0')}/${jDate.day.toString().padLeft(2, '0')}';
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 6),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: ListTile(
-        leading: const Icon(Icons.money_off, color: Colors.red),
-        title: Text(expense.text, style: const TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Text(formattedDate),
-        trailing: Text('${expense.amount} تومان', style: const TextStyle(color: Colors.red)),
-      ),
-    );
-  }
+    Widget _buildExpenseItem(Expense expense) {
+        final dateTime = DateTime.parse(expense.date);
+        final jDate = Jalali.fromDateTime(dateTime);
+        final formattedDate = '${jDate.year}/${jDate.month.toString().padLeft(2, '0')}/${jDate.day.toString().padLeft(2, '0')}';
+
+        return Card(
+            margin: const EdgeInsets.symmetric(vertical: 6),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            child: ListTile(
+                leading: const Icon(Icons.money_off, color: Colors.red),
+                title: Text(expense.text, style: const TextStyle(fontWeight: FontWeight.bold)),
+                subtitle: Text(formattedDate),
+                trailing: Text('${expense.amount} تومان', style: const TextStyle(color: Colors.red)),
+            ),
+        );
+    }
 
   Widget _buildIncomeItem(Income income) {
-    final jDate = Jalali.fromDateTime(income.date);
+    final dateTime = DateTime.parse(income.date);
+    final jDate = Jalali.fromDateTime(dateTime);
     final formattedDate = '${jDate.year}/${jDate.month.toString().padLeft(2, '0')}/${jDate.day.toString().padLeft(2, '0')}';
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 6),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: ListTile(
-        leading: const Icon(Icons.account_balance_wallet, color: Colors.green),
-        title: Text(income.text, style: const TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Text(formattedDate),
-        trailing: Text('${income.amount} تومان', style: const TextStyle(color: Colors.green)),
-      ),
-    );
-  }
+
+        return Card(
+            margin: const EdgeInsets.symmetric(vertical: 6),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            child: ListTile(
+                leading: const Icon(Icons.account_balance_wallet, color: Colors.green),
+                title: Text(income.text, style: const TextStyle(fontWeight: FontWeight.bold)),
+                subtitle: Text(formattedDate),
+                trailing: Text('${income.amount} تومان', style: const TextStyle(color: Colors.green)),
+            ),
+        );
+    }
+
 
   void _onAddPressed() {
     showModalBottomSheet(
