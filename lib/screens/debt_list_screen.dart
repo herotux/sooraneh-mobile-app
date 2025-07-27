@@ -128,9 +128,13 @@ class _DebtListScreenState extends State<DebtListScreen> {
               },
             ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // میتونی اینجا به صفحه افزودن بدهی بری
+        onPressed: () async {
+          final added = await Navigator.pushNamed(context, '/add-debt');
+          if (added == true) {
+            _fetchDebts(); // لیست رو بعد از افزودن رفرش کن
+          }
         },
+
         child: Icon(Icons.add),
         tooltip: 'افزودن بدهی',
       ),
