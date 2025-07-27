@@ -43,8 +43,7 @@ class _CreditsListScreenState extends State<CreditsListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
+    return MainScaffold(
         title: Text('لیست اعتبارات'),
         actions: [
           IconButton(
@@ -55,7 +54,6 @@ class _CreditsListScreenState extends State<CreditsListScreen> {
             },
           ),
         ],
-      ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
           : ListView.builder(

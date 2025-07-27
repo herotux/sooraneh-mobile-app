@@ -62,8 +62,8 @@ class _AddDebtScreenState extends State<AddDebtScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('افزودن بدهی')),
+    return MainScaffold(
+      title: "افزودن بدهی",
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(

@@ -67,8 +67,8 @@ class _EditDebtScreenState extends State<EditDebtScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('ویرایش بدهی')),
+    return MainScaffold(
+      title: "ویرایش بدهی",
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(

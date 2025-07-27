@@ -62,8 +62,8 @@ class _DebtListScreenState extends State<DebtListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('بدهی‌ها')),
+    return MainScaffold(
+      title: "بدهی‌ها",
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
           : ListView.builder(

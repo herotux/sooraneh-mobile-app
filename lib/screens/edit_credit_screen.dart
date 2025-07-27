@@ -67,8 +67,8 @@ class _EditCreditScreenState extends State<EditCreditScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('ویرایش اعتبار')),
+    return MainScaffold(
+      title: "ویرایش اعتبار",
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(

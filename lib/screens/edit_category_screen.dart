@@ -66,8 +66,8 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('ویرایش دسته‌بندی')),
+    return MainScaffold(
+      title: "ویرایش دسته‌بندی",
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(

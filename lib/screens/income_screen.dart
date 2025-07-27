@@ -91,10 +91,8 @@ class _IncomeScreenState extends State<IncomeScreen> {
   Widget build(BuildContext context) {
     return Directionality(
       textDirection: TextDirection.rtl,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('درآمدها'),
-        ),
+      child: MainScaffold(
+        title: Text('درآمدها'),
         body: _isLoading
             ? Center(child: CircularProgressIndicator())
             : _incomes.isEmpty

@@ -46,8 +46,8 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('افزودن دسته‌بندی جدید')),
+    return MainScaffold(
+      title: "افزودن دسته‌بندی جدید",
       body: Padding(
         padding: EdgeInsets.all(16),
         child: Form(

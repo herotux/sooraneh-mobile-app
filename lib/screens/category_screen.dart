@@ -55,10 +55,8 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('دسته‌بندی‌ها'),
-      ),
+    return MainScaffold(
+      title: Text('دسته‌بندی‌ها'),
       body: FutureBuilder<List<Category>>(
         future: _categoriesFuture,
         builder: (context, snapshot) {

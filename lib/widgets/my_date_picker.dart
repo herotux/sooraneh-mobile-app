@@ -36,8 +36,8 @@ class _MyDatePickerState extends State<MyDatePicker> {
         LinearDatePicker(
           isJalali: true,
           initialDate: _selectedDate,
-          startDate: DateTime(1370, 1, 1),
-          endDate: DateTime(1450, 12, 29),
+          startDate: DateTime(1991, 21, 3),
+          endDate: DateTime(2072, 03, 29),
           showLabels: true,
           showDay: true,
           columnWidth: 80,

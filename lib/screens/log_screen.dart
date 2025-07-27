@@ -11,20 +11,19 @@ class _LogScreenState extends State<LogScreen> {
   Widget build(BuildContext context) {
     final logs = LogService.getLogs();
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('لاگ‌ها'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.delete_forever),
-            onPressed: () {
-              setState(() {
-                LogService.clear();
-              });
-            },
-          ),
-        ],
-      ),
+    return MainScaffold(
+      title: Text('لاگ‌ها'),
+      actions: [
+        IconButton(
+          icon: Icon(Icons.delete_forever),
+          onPressed: () {
+            setState(() {
+              LogService.clear();
+            });
+          },
+        ),
+      ],
+
       body: logs.isEmpty
           ? Center(child: Text('لاگی وجود ندارد'))
           : ListView.builder(
