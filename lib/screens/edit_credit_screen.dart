@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:daric/models/credit.dart';
 import 'package:daric/services/api_service.dart';
-import 'package:shamsi_date/shamsi_date.dart';
 import 'package:daric/widgets/my_date_picker.dart';
 import 'package:daric/widgets/main_scaffold.dart';
-
-
+import 'package:daric/widgets/person_dropdown.dart';
 
 class EditCreditScreen extends StatefulWidget {
   final Credit credit;
@@ -24,6 +22,8 @@ class _EditCreditScreenState extends State<EditCreditScreen> {
   late DateTime _date;
   late DateTime _payDate;
 
+  int? _selectedPersonId;
+
   final ApiService _apiService = ApiService();
   bool _isLoading = false;
 
@@ -34,6 +34,7 @@ class _EditCreditScreenState extends State<EditCreditScreen> {
     _amountController = TextEditingController(text: widget.credit.amount.toString());
     _date = widget.credit.date;
     _payDate = widget.credit.payDate;
+    _selectedPersonId = widget.credit.personId;
   }
 
   @override
@@ -44,17 +45,18 @@ class _EditCreditScreenState extends State<EditCreditScreen> {
   }
 
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate() || _selectedPersonId == null) return;
 
     setState(() => _isLoading = true);
 
     final updatedCredit = Credit(
       id: widget.credit.id,
-      personName: widget.credit.personName,
+      personId: _selectedPersonId,
       description: _descriptionController.text.trim(),
       amount: int.parse(_amountController.text.trim()),
       date: _date,
       payDate: _payDate,
+      personName: '', // شخص با شناسه انتخاب شده در API شناسایی می‌شود، پس نام لازم نیست ارسال شود
     );
 
     final success = await _apiService.updateCredit(updatedCredit);
@@ -78,25 +80,39 @@ class _EditCreditScreenState extends State<EditCreditScreen> {
           key: _formKey,
           child: ListView(
             children: [
+              /// انتخاب شخص
+              PersonDropdown(
+                initialPersonId: _selectedPersonId,
+                onChanged: (personId) {
+                  setState(() {
+                    _selectedPersonId = personId;
+                  });
+                },
+              ),
+
+              const SizedBox(height: 16),
+
               TextFormField(
                 controller: _descriptionController,
                 decoration: InputDecoration(labelText: 'توضیحات'),
                 validator: (val) => val == null || val.isEmpty ? 'توضیحات را وارد کنید' : null,
               ),
+
               const SizedBox(height: 16),
+
               TextFormField(
                 controller: _amountController,
                 decoration: InputDecoration(labelText: 'مبلغ'),
                 keyboardType: TextInputType.number,
                 validator: (val) {
                   if (val == null || val.isEmpty) return 'مبلغ را وارد کنید';
-                  if (int.tryParse(val) == null) return 'مبلغ باید عدد باشد';
+                  if (int.tryParse(val) == null || int.parse(val) <= 0) return 'مبلغ باید عدد صحیح مثبت باشد';
                   return null;
                 },
               ),
+
               const SizedBox(height: 24),
 
-              /// ویجت جدید انتخاب تاریخ اعتبار
               MyDatePicker(
                 label: 'تاریخ اعتبار',
                 initialDate: _date,
@@ -105,7 +121,6 @@ class _EditCreditScreenState extends State<EditCreditScreen> {
 
               const SizedBox(height: 24),
 
-              /// ویجت جدید انتخاب تاریخ پرداخت
               MyDatePicker(
                 label: 'تاریخ پرداخت',
                 initialDate: _payDate,
