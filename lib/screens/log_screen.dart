@@ -15,7 +15,7 @@ class _LogScreenState extends State<LogScreen> {
     final logs = LogService.getLogs();
 
     return MainScaffold(
-      title: Text('لاگ‌ها'),
+      title: 'لاگ‌ها',
       actions: [
         IconButton(
           icon: Icon(Icons.delete_forever),
