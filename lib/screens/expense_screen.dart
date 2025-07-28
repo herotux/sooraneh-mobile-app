@@ -55,12 +55,11 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
     }
   }
 
-  Future<void> _editExpense(Expense expense) async {
+  Future<bool?> _editExpense(Expense expense) async {
     final updated = await Navigator.pushNamed(context, '/edit-expense', arguments: expense);
-    if (updated == true) {
-      await _loadExpenses();
-    }
+    return updated == true;
   }
+
 
   Widget _buildExpenseItem(Expense exp) {
     final formattedDate = _formatJalali(exp.date);
@@ -82,7 +81,7 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
       confirmDismiss: (direction) async {
         if (direction == DismissDirection.startToEnd) {
           // کشیدن به راست: فقط ویرایش صفحه باز شود، حذف نشود
-          final updated = await _editExpense(exp);
+          final updated = await Navigator.pushNamed(context, '/edit-expense', arguments: exp);
           if (updated == true) {
             await _loadExpenses();
           }
@@ -110,6 +109,7 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
         }
         return false;
       },
+
 
       child: Card(
         margin: EdgeInsets.symmetric(vertical: 8),
