@@ -33,7 +33,7 @@ class _IncomeScreenState extends State<IncomeScreen> {
     try {
       final data = await _apiService.getIncomes();
       setState(() {
-        _incomes = data?.map((item) => Income.fromJson(item)).toList() ?? [];
+        _incomes = data ?? [];
         _isLoading = false;
       });
     } catch (e) {
@@ -148,7 +148,7 @@ class _IncomeScreenState extends State<IncomeScreen> {
                               ),
                             );
                             if (confirm == true) {
-                              await _deleteIncome(inc.id);
+                              if (inc.id != null) await _deleteIncome(inc.id!);
                               return true;
                             }
                             return false;

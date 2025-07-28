@@ -36,17 +36,17 @@ class _DashboardWidgetState extends State<DashboardWidget> {
 
     if (expenses != null) {
       for (var e in expenses) {
-        DateTime dt = DateTime.parse(e['date']);
+        DateTime dt = DateTime.parse(e.date);
         int monthIndex = Jalali.fromDateTime(dt).month - 1;
-        expenseData[monthIndex] += (e['amount'] ?? 0).toDouble();
+        expenseData[monthIndex] += e.amount.toDouble();
       }
     }
 
     if (incomes != null) {
       for (var i in incomes) {
-        DateTime dt = DateTime.parse(i['date']);
+        DateTime dt = DateTime.parse(i.date);
         int monthIndex = Jalali.fromDateTime(dt).month - 1;
-        incomeData[monthIndex] += (i['amount'] ?? 0).toDouble();
+        incomeData[monthIndex] += i.amount.toDouble();
       }
     }
 

@@ -23,7 +23,7 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
     final data = await _apiService.getExpenses();
     if (data != null) {
       setState(() {
-        _expenses = data.map((e) => Expense.fromJson(e)).toList();
+        _expenses = data;
         _expenses.sort((a, b) => b.date.compareTo(a.date)); // مرتب‌سازی نزولی
       });
     } else {
