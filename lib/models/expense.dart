@@ -17,29 +17,22 @@ class Expense {
     this.tag,
   });
 
-  factory Expense.fromJson(Map<String, dynamic> json) {
-    return Expense(
-      id: json['id'],
-      text: json['text'],
-      amount: json['amount'],
-      date: json['date'],
-      category: json['category'],
-      person: json['person'],
-      tag: json['tag'],
-    );
-  }
+  factory Expense.fromJson(Map<String, dynamic> json) => Expense(
+        id: json['id'],
+        text: json['text'],
+        amount: json['amount'],
+        date: json['date'],
+        category: json['category'],
+        person: json['person'],
+        tag: json['tag'],
+      );
 
-  Map<String, dynamic> toJson() {
-    final data = {
-      'text': text,
-      'amount': amount,
-      'date': date,
-    };
-
-    if (category != null) data['category'] = category;
-    if (person != null) data['person'] = person;
-    if (tag != null) data['tag'] = tag;
-
-    return data;
-  }
+  Map<String, Object?> toJson() => {
+        'text': text,
+        'amount': amount,
+        'date': date,
+        if (category != null) 'category': category,
+        if (person != null) 'person': person,
+        if (tag != null) 'tag': tag,
+      };
 }

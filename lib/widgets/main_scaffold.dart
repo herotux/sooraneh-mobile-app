@@ -11,6 +11,7 @@ class MainScaffold extends StatefulWidget {
     required this.body,
     required this.title,
     this.floatingActionButton,
+    this.actions,
   }) : super(key: key);
 
   @override
@@ -40,6 +41,7 @@ class _MainScaffoldState extends State<MainScaffold> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        actions: actions,
         leading: Builder(
           builder: (context) => IconButton(
             icon: const Icon(Icons.menu),
