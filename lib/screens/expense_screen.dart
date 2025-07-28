@@ -81,9 +81,14 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
       ),
       confirmDismiss: (direction) async {
         if (direction == DismissDirection.startToEnd) {
-          await _editExpense(exp);
-          return false;
+          // کشیدن به راست: فقط ویرایش صفحه باز شود، حذف نشود
+          final updated = await _editExpense(exp);
+          if (updated == true) {
+            await _loadExpenses();
+          }
+          return false; // اجازه نده آیتم حذف شود
         } else if (direction == DismissDirection.endToStart) {
+          // کشیدن به چپ: تایید حذف و حذف آیتم
           final confirm = await showDialog<bool>(
             context: context,
             builder: (ctx) => AlertDialog(
@@ -99,12 +104,13 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
             if (exp.id != null) {
               await _deleteExpense(exp.id!);
             }
-            return true;
+            return true; // آیتم حذف شود
           }
-          return false;
+          return false; // حذف لغو شود
         }
         return false;
       },
+
       child: Card(
         margin: EdgeInsets.symmetric(vertical: 8),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
