@@ -83,7 +83,7 @@ class _EditCreditScreenState extends State<EditCreditScreen> {
           child: ListView(
             children: [
               PersonDropdown(
-                initialPersonId: _selectedPersonId,
+                selectedPersonId: _selectedPersonId,
                 onChanged: (personId) {
                   setState(() {
                     _selectedPersonId = personId;

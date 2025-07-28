@@ -78,7 +78,7 @@ class _AddCreditScreenState extends State<AddCreditScreen> {
                 onChanged: (personId) {
                   setState(() => _selectedPersonId = personId);
                 },
-                initialPersonId: _selectedPersonId,
+                selectedPersonId: _selectedPersonId,
               ),
 
               SizedBox(height: 16),

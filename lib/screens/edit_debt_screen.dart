@@ -79,7 +79,7 @@ class _EditDebtScreenState extends State<EditDebtScreen> {
           child: ListView(
             children: [
               PersonDropdown(
-                initialPersonId: _selectedPersonId,
+                selectedPersonId: _selectedPersonId,
                 onChanged: (val) => setState(() => _selectedPersonId = val),
               ),
               const SizedBox(height: 16),
