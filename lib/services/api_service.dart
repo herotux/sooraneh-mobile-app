@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:daric/utils/jwt_storage.dart';
-import 'package:daric/utils/network_utils.dart';
 import 'package:daric/models/category.dart';
 import 'package:daric/models/credit.dart';
 import 'package:daric/models/debt.dart';
@@ -11,7 +10,25 @@ import 'package:daric/models/expense.dart';
 class ApiService {
   static const String baseUrl = 'https://freetux.pythonanywhere.com/api';
 
-  // ==== AUTH ====
+  // ======== Headers ========
+
+  Map<String, String> _jsonHeaders() => {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      };
+
+  Map<String, String> _authHeaders(String token) => {
+        ..._jsonHeaders(),
+        'Authorization': 'Bearer $token',
+      };
+
+  Future<Map<String, String>?> _getAuthHeaders() async {
+    final token = await JwtStorage.getToken();
+    if (token == null) return null;
+    return _authHeaders(token);
+  }
+
+  // ======== AUTH ========
 
   Future<Map<String, dynamic>?> login({
     required String username,
@@ -19,10 +36,12 @@ class ApiService {
   }) async {
     final url = Uri.parse('$baseUrl/auth/login/');
     final body = jsonEncode({'username': username, 'password': password});
+
     try {
       final response = await http.post(url, headers: _jsonHeaders(), body: body);
+
       if (response.statusCode == 200) {
-        final data = parseJsonResponse(response);
+        final data = jsonDecode(response.body);
         final token = data['access'];
         if (token != null) {
           await JwtStorage.saveToken(token);
@@ -53,10 +72,12 @@ class ApiService {
       'password': password,
       'is_admin': isAdmin,
     });
+
     try {
       final response = await http.post(url, headers: _jsonHeaders(), body: body);
+
       if (response.statusCode == 201) {
-        final data = parseJsonResponse(response);
+        final data = jsonDecode(response.body);
         final token = data['access'];
         if (token != null) {
           await JwtStorage.saveToken(token);
@@ -70,37 +91,23 @@ class ApiService {
     }
   }
 
-  // ==== INCOMES / EXPENSES ====
+  // ======== EXPENSES ========
 
-  Future<List<dynamic>?> getIncomes() async {
-    final token = await JwtStorage.getToken();
-    if (token == null) return null;
-    try {
-      final response = await http.get(
-        Uri.parse('$baseUrl/v1/incomes/'),
-        headers: _authHeaders(token),
-      );
-      if (response.statusCode == 200) {
-        return parseJsonResponse(response);
-      }
-      return null;
-    } catch (e) {
-      print('getIncomes error: $e');
-      return null;
-    }
-  }
+  Future<List<Expense>?> getExpenses() async {
+    final headers = await _getAuthHeaders();
+    if (headers == null) return null;
 
-  Future<List<dynamic>?> getExpenses() async {
-    final token = await JwtStorage.getToken();
-    if (token == null) return null;
     try {
       final response = await http.get(
         Uri.parse('$baseUrl/v1/expenses/'),
-        headers: _authHeaders(token),
+        headers: headers,
       );
+
       if (response.statusCode == 200) {
-        return parseJsonResponse(response);
+        final List jsonList = jsonDecode(response.body);
+        return jsonList.map((e) => Expense.fromJson(e)).toList();
       }
+
       return null;
     } catch (e) {
       print('getExpenses error: $e');
@@ -108,20 +115,123 @@ class ApiService {
     }
   }
 
-  // ==== CATEGORY ====
+  Future<bool> addExpense(Expense expense) async {
+    final headers = await _getAuthHeaders();
+    if (headers == null) return false;
+
+    final response = await http.post(
+      Uri.parse('$baseUrl/v1/expenses/'),
+      headers: headers,
+      body: jsonEncode(expense.toJson()),
+    );
+
+    return response.statusCode == 201;
+  }
+
+  Future<bool> updateExpense(Expense expense) async {
+    final headers = await _getAuthHeaders();
+    if (headers == null) return false;
+
+    final response = await http.put(
+      Uri.parse('$baseUrl/v1/expenses/${expense.id}/'),
+      headers: headers,
+      body: jsonEncode(expense.toJson()),
+    );
+
+    return response.statusCode == 200 || response.statusCode == 204;
+  }
+
+  Future<bool> deleteExpense(int id) async {
+    final headers = await _getAuthHeaders();
+    if (headers == null) return false;
+
+    final response = await http.delete(
+      Uri.parse('$baseUrl/v1/expenses/$id/'),
+      headers: headers,
+    );
+
+    return response.statusCode == 204;
+  }
+
+  // ======== INCOMES ========
+
+  Future<List<Income>?> getIncomes() async {
+    final headers = await _getAuthHeaders();
+    if (headers == null) return null;
+
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/v1/incomes/'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        final List jsonList = jsonDecode(response.body);
+        return jsonList.map((e) => Income.fromJson(e)).toList();
+      }
+
+      return null;
+    } catch (e) {
+      print('getIncomes error: $e');
+      return null;
+    }
+  }
+
+  Future<bool> addIncome(Income income) async {
+    final headers = await _getAuthHeaders();
+    if (headers == null) return false;
+
+    final response = await http.post(
+      Uri.parse('$baseUrl/v1/incomes/'),
+      headers: headers,
+      body: jsonEncode(income.toJson()),
+    );
+
+    return response.statusCode == 201;
+  }
+
+  Future<bool> updateIncome(Income income) async {
+    final headers = await _getAuthHeaders();
+    if (headers == null) return false;
+
+    final response = await http.put(
+      Uri.parse('$baseUrl/v1/incomes/${income.id}/'),
+      headers: headers,
+      body: jsonEncode(income.toJson()),
+    );
+
+    return response.statusCode == 200 || response.statusCode == 204;
+  }
+
+  Future<bool> deleteIncome(int id) async {
+    final headers = await _getAuthHeaders();
+    if (headers == null) return false;
+
+    final response = await http.delete(
+      Uri.parse('$baseUrl/v1/incomes/$id/'),
+      headers: headers,
+    );
+
+    return response.statusCode == 204;
+  }
+
+  // ======== CATEGORIES ========
 
   Future<List<Category>?> getCategories() async {
-    final token = await JwtStorage.getToken();
-    if (token == null) return null;
+    final headers = await _getAuthHeaders();
+    if (headers == null) return null;
+
     try {
       final response = await http.get(
         Uri.parse('$baseUrl/v1/categories/'),
-        headers: _authHeaders(token),
+        headers: headers,
       );
+
       if (response.statusCode == 200) {
-        final List jsonList = parseJsonResponse(response);
+        final List jsonList = jsonDecode(response.body);
         return jsonList.map((e) => Category.fromJson(e)).toList();
       }
+
       return null;
     } catch (e) {
       print('getCategories error: $e');
@@ -130,54 +240,60 @@ class ApiService {
   }
 
   Future<bool> addCategory(Category category) async {
-    final token = await JwtStorage.getToken();
-    if (token == null) return false;
+    final headers = await _getAuthHeaders();
+    if (headers == null) return false;
 
     final response = await http.post(
       Uri.parse('$baseUrl/v1/categories/'),
-      headers: _authHeaders(token),
+      headers: headers,
       body: jsonEncode(category.toJson()),
     );
+
     return response.statusCode == 201;
   }
 
-  Future<bool> deleteCategory(int id) async {
-    final token = await JwtStorage.getToken();
-    if (token == null) return false;
-
-    final response = await http.delete(
-      Uri.parse('$baseUrl/v1/categories/$id/'),
-      headers: _authHeaders(token),
-    );
-    return response.statusCode == 204;
-  }
-
   Future<bool> updateCategory(int id, Map<String, dynamic> data) async {
-    final token = await JwtStorage.getToken();
-    if (token == null) return false;
+    final headers = await _getAuthHeaders();
+    if (headers == null) return false;
 
     final response = await http.put(
       Uri.parse('$baseUrl/v1/categories/$id/'),
-      headers: _authHeaders(token),
+      headers: headers,
       body: jsonEncode(data),
     );
+
     return response.statusCode == 200 || response.statusCode == 204;
   }
 
-  // ==== CREDITS ====
+  Future<bool> deleteCategory(int id) async {
+    final headers = await _getAuthHeaders();
+    if (headers == null) return false;
+
+    final response = await http.delete(
+      Uri.parse('$baseUrl/v1/categories/$id/'),
+      headers: headers,
+    );
+
+    return response.statusCode == 204;
+  }
+
+  // ======== CREDITS ========
 
   Future<List<Credit>?> getCredits() async {
-    final token = await JwtStorage.getToken();
-    if (token == null) return null;
+    final headers = await _getAuthHeaders();
+    if (headers == null) return null;
+
     try {
       final response = await http.get(
         Uri.parse('$baseUrl/v1/credits/'),
-        headers: _authHeaders(token),
+        headers: headers,
       );
+
       if (response.statusCode == 200) {
-        final List jsonList = parseJsonResponse(response);
+        final List jsonList = jsonDecode(response.body);
         return jsonList.map((e) => Credit.fromJson(e)).toList();
       }
+
       return null;
     } catch (e) {
       print('getCredits error: $e');
@@ -186,54 +302,60 @@ class ApiService {
   }
 
   Future<bool> addCredit(Credit credit) async {
-    final token = await JwtStorage.getToken();
-    if (token == null) return false;
+    final headers = await _getAuthHeaders();
+    if (headers == null) return false;
 
     final response = await http.post(
       Uri.parse('$baseUrl/v1/credits/'),
-      headers: _authHeaders(token),
+      headers: headers,
       body: jsonEncode(credit.toJson()),
     );
+
     return response.statusCode == 201;
   }
 
-  Future<bool> deleteCredit(int id) async {
-    final token = await JwtStorage.getToken();
-    if (token == null) return false;
-
-    final response = await http.delete(
-      Uri.parse('$baseUrl/v1/credits/$id/'),
-      headers: _authHeaders(token),
-    );
-    return response.statusCode == 204;
-  }
-
   Future<bool> updateCredit(Credit credit) async {
-    final token = await JwtStorage.getToken();
-    if (token == null) return false;
+    final headers = await _getAuthHeaders();
+    if (headers == null) return false;
 
     final response = await http.put(
       Uri.parse('$baseUrl/v1/credits/${credit.id}/'),
-      headers: _authHeaders(token),
+      headers: headers,
       body: jsonEncode(credit.toJson()),
     );
-    return response.statusCode == 200;
+
+    return response.statusCode == 200 || response.statusCode == 204;
   }
 
-  // ==== DEBTS ====
+  Future<bool> deleteCredit(int id) async {
+    final headers = await _getAuthHeaders();
+    if (headers == null) return false;
+
+    final response = await http.delete(
+      Uri.parse('$baseUrl/v1/credits/$id/'),
+      headers: headers,
+    );
+
+    return response.statusCode == 204;
+  }
+
+  // ======== DEBTS ========
 
   Future<List<Debt>?> getDebts() async {
-    final token = await JwtStorage.getToken();
-    if (token == null) return null;
+    final headers = await _getAuthHeaders();
+    if (headers == null) return null;
+
     try {
       final response = await http.get(
         Uri.parse('$baseUrl/v1/debts/'),
-        headers: _authHeaders(token),
+        headers: headers,
       );
+
       if (response.statusCode == 200) {
-        final List jsonList = parseJsonResponse(response);
+        final List jsonList = jsonDecode(response.body);
         return jsonList.map((e) => Debt.fromJson(e)).toList();
       }
+
       return null;
     } catch (e) {
       print('getDebts error: $e');
@@ -242,98 +364,40 @@ class ApiService {
   }
 
   Future<bool> addDebt(Debt debt) async {
-    final token = await JwtStorage.getToken();
-    if (token == null) return false;
+    final headers = await _getAuthHeaders();
+    if (headers == null) return false;
 
     final response = await http.post(
       Uri.parse('$baseUrl/v1/debts/'),
-      headers: _authHeaders(token),
+      headers: headers,
       body: jsonEncode(debt.toJson()),
     );
+
     return response.statusCode == 201;
-  }
-
-  Future<bool> deleteDebt(int id) async {
-    final token = await JwtStorage.getToken();
-    if (token == null) return false;
-
-    final response = await http.delete(
-      Uri.parse('$baseUrl/v1/debts/$id/'),
-      headers: _authHeaders(token),
-    );
-    return response.statusCode == 204;
   }
 
   Future<bool> updateDebt(Debt debt) async {
-    final token = await JwtStorage.getToken();
-    if (token == null) return false;
+    final headers = await _getAuthHeaders();
+    if (headers == null) return false;
 
     final response = await http.put(
       Uri.parse('$baseUrl/v1/debts/${debt.id}/'),
-      headers: _authHeaders(token),
+      headers: headers,
       body: jsonEncode(debt.toJson()),
     );
-    return response.statusCode == 200;
+
+    return response.statusCode == 200 || response.statusCode == 204;
   }
 
+  Future<bool> deleteDebt(int id) async {
+    final headers = await _getAuthHeaders();
+    if (headers == null) return false;
 
-  Future<bool> deleteIncome(int id) async {
-    final response = await http.delete(Uri.parse('$baseUrl/v1/incomes/$id/'));
+    final response = await http.delete(
+      Uri.parse('$baseUrl/v1/debts/$id/'),
+      headers: headers,
+    );
+
     return response.statusCode == 204;
   }
-
-  Future<bool> deleteExpense(int id) async {
-    final response = await http.delete(Uri.parse('$baseUrl/v1/expenses/$id/'));
-    return response.statusCode == 204;
-  }
-
-  Future<bool> addIncome(Income income) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/v1/incomes/'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(income.toJson()),
-    );
-    return response.statusCode == 201;
-  }
-
-  Future<bool> updateIncome(Income income) async {
-    final response = await http.put(
-      Uri.parse('$baseUrl/v1/incomes/${income.id}/'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(income.toJson()),
-    );
-    return response.statusCode == 200;
-  }
-
-  Future<bool> addExpense(Expense expense) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/v1/expenses/'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(expense.toJson()),
-    );
-    return response.statusCode == 201;
-  }
-
-  Future<bool> updateExpense(Expense expense) async {
-    final response = await http.put(
-      Uri.parse('$baseUrl/v1/expenses/${expense.id}/'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(expense.toJson()),
-    );
-    return response.statusCode == 200;
-  }
-
-
-
-  // ==== HEADERS ====
-
-  Map<String, String> _jsonHeaders() => {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      };
-
-  Map<String, String> _authHeaders(String token) => {
-        ..._jsonHeaders(),
-        'Authorization': 'Bearer $token',
-      };
 }

@@ -20,10 +20,10 @@ class _LogScreenState extends State<LogScreen> {
         IconButton(
           icon: Icon(Icons.delete_forever),
           onPressed: () {
-            setState(() {
-              LogService.clear();
-            });
+            LogService.clear();
+            setState(() {});
           },
+
         ),
       ],
 

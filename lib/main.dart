@@ -19,7 +19,7 @@ import 'package:daric/screens/add_debt_screen.dart';
 import 'package:daric/screens/settings_screen.dart';
 import 'package:daric/screens/add_income_screen.dart';
 import 'package:daric/screens/add_expense_screen.dart';
-
+import 'package:daric/screens/log_screen.dart';
 
 
 
@@ -74,6 +74,7 @@ class MyApp extends StatelessWidget {
           return EditDebtScreen(debt: debt);
         },
         '/settings': (context) => SettingsScreen(),
+        '/logs': (context) => LogScreen(),
         
       },
     );

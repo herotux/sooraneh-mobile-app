@@ -19,6 +19,10 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   double? _amount;
   DateTime _selectedDate = DateTime.now();
 
+  int? _selectedCategoryId;
+  int? _selectedPersonId;
+  int? _selectedTagId;
+
   bool _isSaving = false;
   String? _errorMessage;
 
@@ -39,10 +43,13 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
 
     try {
       final expense = Expense(
-        id: 0, // یا هر عدد موقتی که لازمه
+        id: 0,
         text: _description,
         amount: _amount!.toInt(),
         date: _selectedDate.toIso8601String(),
+        category: _selectedCategoryId,
+        person: _selectedPersonId,
+        tag: _selectedTagId,
       );
 
       final success = await _apiService.addExpense(expense);
@@ -85,10 +92,16 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                           labelText: 'توضیحات',
                           border: OutlineInputBorder(),
                         ),
-                        validator: (val) =>
-                            val == null || val.trim().isEmpty ? 'توضیح را وارد کنید' : null,
+                        validator: (val) {
+                          if (val == null || val.trim().isEmpty) {
+                            return 'توضیح را وارد کنید';
+                          }
+                          if (val.trim().length > 30) {
+                            return 'حداکثر ۳۰ کاراکتر';
+                          }
+                          return null;
+                        },
                         onSaved: (val) => _description = val!.trim(),
-                        textInputAction: TextInputAction.next,
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
@@ -109,11 +122,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                         },
                         onSaved: (val) =>
                             _amount = double.tryParse(val!.replaceAll(',', '')),
-                        textInputAction: TextInputAction.done,
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 16),
 
-                      // استفاده از ویجت دیت‌پیکر سفارشی
                       MyDatePicker(
                         label: 'تاریخ هزینه',
                         initialDate: _selectedDate,
