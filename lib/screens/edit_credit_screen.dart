@@ -54,7 +54,7 @@ class _EditCreditScreenState extends State<EditCreditScreen> {
 
     final updatedCredit = Credit(
       id: widget.credit.id,
-      person: _selectedPersonId != null ? Person(id: _selectedPersonId!, firstName: '') : null, // ✅ تبدیل id به آبجکت Person
+      person: _selectedPersonId != null ? Person(id: _selectedPersonId!, firstName: '', relation: '') : null, // ✅ تبدیل id به آبجکت Person
       description: _descriptionController.text.trim(),
       amount: int.parse(_amountController.text.trim()),
       date: _date,

@@ -33,7 +33,7 @@ class _AddCreditScreenState extends State<AddCreditScreen> {
 
     final credit = Credit(
       id: 0,
-      person: _selectedPersonId != null ? Person(id: _selectedPersonId!, firstName: '') : null,
+      person: _selectedPersonId != null ? Person(id: _selectedPersonId!, firstName: '', relation: '') : null,
       amount: int.parse(_amountController.text.trim()),
       date: _date!,
       payDate: _payDate!,

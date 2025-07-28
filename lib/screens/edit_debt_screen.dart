@@ -50,7 +50,7 @@ class _EditDebtScreenState extends State<EditDebtScreen> {
 
     final updatedDebt = Debt(
       id: widget.debt.id,
-      person: _selectedPersonId != null ? Person(id: _selectedPersonId!, firstName: '') : null, // ✅ تبدیل id به شیء Person
+      person: _selectedPersonId != null ? Person(id: _selectedPersonId!, firstName: '', relation: '') : null, // ✅ تبدیل id به شیء Person
       description: _descriptionController.text.trim(),
       amount: int.parse(_amountController.text.trim()),
       date: _date,
