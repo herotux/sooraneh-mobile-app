@@ -1,15 +1,19 @@
+import 'package:flutter/material.dart';
+
 class LogService {
-  static final List<String> _logs = [];
+  static final ValueNotifier<List<String>> logs = ValueNotifier([]);
 
   static void log(String message) {
     final timestamp = DateTime.now().toIso8601String();
-    _logs.add("[$timestamp] $message");
-    print("[$timestamp] $message");
-  }
+    final logMessage = "[$timestamp] $message";
 
-  static List<String> getLogs() => _logs.reversed.toList();
+    logs.value = [...logs.value, logMessage];
+    print(logMessage);
+  }
 
   static void clear() {
-    _logs.clear();
+    logs.value = [];
   }
+
+  static List<String> getLogs() => logs.value.reversed.toList();
 }
