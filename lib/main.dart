@@ -75,6 +75,7 @@ class MyApp extends StatelessWidget {
         },
         '/settings': (context) => SettingsScreen(),
         '/logs': (context) => LogScreen(),
+        '/persons': (context) => PersonsScreen(),
         
       },
     );
