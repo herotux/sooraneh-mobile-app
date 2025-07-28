@@ -80,37 +80,41 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
       ),
       confirmDismiss: (direction) async {
         if (direction == DismissDirection.startToEnd) {
-          // کشیدن به راست: فقط ویرایش صفحه باز شود، حذف نشود
-          final updated = await Navigator.pushNamed(context, '/edit-expense', arguments: exp);
+          final updated = await Navigator.pushNamed(
+            context,
+            '/edit-expense',
+            arguments: exp,
+          );
           if (updated == true) {
-            await _loadExpenses();
+            _loadExpenses();
           }
-          return false; // اجازه نده آیتم حذف شود
+          return false;
         } else if (direction == DismissDirection.endToStart) {
-          // کشیدن به چپ: تایید حذف و حذف آیتم
           final confirm = await showDialog<bool>(
             context: context,
             builder: (ctx) => AlertDialog(
               title: Text('حذف هزینه'),
               content: Text('آیا از حذف این هزینه مطمئن هستید؟'),
               actions: [
-                TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: Text('خیر')),
-                TextButton(onPressed: () => Navigator.of(ctx).pop(true), child: Text('بله')),
+                TextButton(
+                  onPressed: () => Navigator.of(ctx).pop(false),
+                  child: Text('خیر'),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(ctx).pop(true),
+                  child: Text('بله'),
+                ),
               ],
             ),
           );
-          if (confirm == true) {
-            if (exp.id != null) {
-              await _deleteExpense(exp.id!);
-            }
-            return true; // آیتم حذف شود
+          if (confirm == true && exp.id != null) {
+            await _deleteExpense(exp.id!);
+            return true;
           }
-          return false; // حذف لغو شود
+          return false;
         }
         return false;
       },
-
-
       child: Card(
         margin: EdgeInsets.symmetric(vertical: 8),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -129,6 +133,7 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
       ),
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
