@@ -20,7 +20,7 @@ class _EditDebtScreenState extends State<EditDebtScreen> {
   late TextEditingController _amountController;
   late DateTime _date;
   late DateTime _payDate;
-  late int? _selectedPersonId;
+  int? _selectedPersonId;
   bool _isLoading = false;
 
   @override
@@ -48,7 +48,6 @@ class _EditDebtScreenState extends State<EditDebtScreen> {
     final updatedDebt = Debt(
       id: widget.debt.id,
       personId: _selectedPersonId,
-      personName: '', // not used
       description: _descriptionController.text.trim(),
       amount: int.parse(_amountController.text.trim()),
       date: _date,
@@ -77,7 +76,7 @@ class _EditDebtScreenState extends State<EditDebtScreen> {
           child: ListView(
             children: [
               PersonDropdown(
-                selectedPersonId: _selectedPersonId,
+                initialPersonId: _selectedPersonId,
                 onChanged: (val) => setState(() => _selectedPersonId = val),
               ),
               const SizedBox(height: 16),

@@ -34,7 +34,7 @@ class _EditCreditScreenState extends State<EditCreditScreen> {
     _amountController = TextEditingController(text: widget.credit.amount.toString());
     _date = widget.credit.date;
     _payDate = widget.credit.payDate;
-    _selectedPersonId = widget.credit.personId;
+    _selectedPersonId = widget.credit.person;
   }
 
   @override
@@ -51,12 +51,11 @@ class _EditCreditScreenState extends State<EditCreditScreen> {
 
     final updatedCredit = Credit(
       id: widget.credit.id,
-      personId: _selectedPersonId,
+      person: _selectedPersonId,
       description: _descriptionController.text.trim(),
       amount: int.parse(_amountController.text.trim()),
       date: _date,
       payDate: _payDate,
-      personName: '', // شخص با شناسه انتخاب شده در API شناسایی می‌شود، پس نام لازم نیست ارسال شود
     );
 
     final success = await _apiService.updateCredit(updatedCredit);
@@ -80,7 +79,6 @@ class _EditCreditScreenState extends State<EditCreditScreen> {
           key: _formKey,
           child: ListView(
             children: [
-              /// انتخاب شخص
               PersonDropdown(
                 initialPersonId: _selectedPersonId,
                 onChanged: (personId) {

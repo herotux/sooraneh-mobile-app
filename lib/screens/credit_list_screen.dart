@@ -52,6 +52,16 @@ class _CreditsListScreenState extends State<CreditsListScreen> {
     return Colors.white;
   }
 
+  String _personDisplayName(Credit credit) {
+    if (credit.person != null) {
+      final p = credit.person!;
+      return p.lastName != null && p.lastName!.isNotEmpty
+          ? '${p.firstName} ${p.lastName}'
+          : p.firstName;
+    }
+    return 'نامشخص';
+  }
+
   Future<void> _deleteCredit(int id, int index) async {
     final success = await ApiService().deleteCredit(id);
     if (success) {
@@ -180,7 +190,7 @@ class _CreditsListScreenState extends State<CreditsListScreen> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        'از ${credit.personName}',
+                                        'از ${_personDisplayName(credit)}',
                                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                                       ),
                                       SizedBox(height: 4),

@@ -72,6 +72,16 @@ class _DebtListScreenState extends State<DebtListScreen> {
     return Colors.white;
   }
 
+  String _personDisplayName(Debt debt) {
+    if (debt.person != null) {
+      final p = debt.person!;
+      return p.lastName != null && p.lastName!.isNotEmpty
+          ? '${p.firstName} ${p.lastName}'
+          : p.firstName;
+    }
+    return 'نامشخص';
+  }
+
   @override
   Widget build(BuildContext context) {
     return MainScaffold(
@@ -187,7 +197,7 @@ class _DebtListScreenState extends State<DebtListScreen> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        'به ${debt.personName}',
+                                        'به ${_personDisplayName(debt)}',
                                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                                       ),
                                       SizedBox(height: 4),

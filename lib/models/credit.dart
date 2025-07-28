@@ -1,14 +1,16 @@
+import 'person.dart';
+
 class Credit {
   final int id;
-  final String personName;  
-  final int amount;         
-  final DateTime date;      
+  final Person? person;           // خود آبجکت Person به جای فقط id
+  final int amount;
+  final DateTime date;
   final DateTime payDate;
   final String? description;
 
   Credit({
     required this.id,
-    required this.personName,
+    this.person,
     required this.amount,
     required this.date,
     required this.payDate,
@@ -17,7 +19,7 @@ class Credit {
 
   factory Credit.fromJson(Map<String, dynamic> json) => Credit(
         id: json['id'],
-        personName: json['person_name'],
+        person: json['person'] != null ? Person.fromJson(json['person']) : null,
         amount: json['amount'],
         date: DateTime.parse(json['date']),
         payDate: DateTime.parse(json['pay_date']),
@@ -26,7 +28,7 @@ class Credit {
 
   Map<String, dynamic> toJson() => {
         'id': id,
-        'person_name': personName,
+        'person': person != null ? person!.toJson() : null,
         'amount': amount,
         'date': date.toIso8601String(),
         'pay_date': payDate.toIso8601String(),
