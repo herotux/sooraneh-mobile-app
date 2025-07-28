@@ -29,7 +29,7 @@ class _PersonsScreenState extends State<PersonsScreen> {
     try {
       final persons = await _apiService.getPersons();
       setState(() {
-        _persons = persons;
+        _persons = persons ?? [];
         _isLoading = false;
       });
     } catch (e) {
