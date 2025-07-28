@@ -4,6 +4,9 @@ import 'package:daric/services/api_service.dart';
 import 'package:daric/widgets/my_date_picker.dart';
 import 'package:daric/widgets/main_scaffold.dart';
 import 'package:daric/widgets/person_dropdown.dart';
+import 'package:daric/models/person.dart';
+
+
 
 class EditDebtScreen extends StatefulWidget {
   final Debt debt;
@@ -30,7 +33,7 @@ class _EditDebtScreenState extends State<EditDebtScreen> {
     _amountController = TextEditingController(text: widget.debt.amount.toString());
     _date = widget.debt.date;
     _payDate = widget.debt.payDate;
-    _selectedPersonId = widget.debt.personId;
+    _selectedPersonId = widget.debt.person?.id; // ✅ استخراج id از person
   }
 
   @override
@@ -47,7 +50,7 @@ class _EditDebtScreenState extends State<EditDebtScreen> {
 
     final updatedDebt = Debt(
       id: widget.debt.id,
-      personId: _selectedPersonId,
+      person: _selectedPersonId != null ? Person(id: _selectedPersonId!, firstName: '') : null, // ✅ تبدیل id به شیء Person
       description: _descriptionController.text.trim(),
       amount: int.parse(_amountController.text.trim()),
       date: _date,

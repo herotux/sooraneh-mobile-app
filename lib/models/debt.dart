@@ -2,15 +2,17 @@ import 'person.dart';
 
 class Debt {
   final int? id;
-  final Person? person;
+  final Person? person;       // فقط برای نمایش
   final int amount;
   final String description;
   final DateTime date;
   final DateTime payDate;
+  final int? personId;        // فقط برای ارسال
 
   Debt({
     this.id,
     this.person,
+    this.personId,
     required this.amount,
     required this.description,
     required this.date,
@@ -28,7 +30,7 @@ class Debt {
 
   Map<String, dynamic> toJson() => {
         if (id != null) 'id': id,
-        'person': person != null ? person!.toJson() : null,
+        if (personId != null) 'person_id': personId,
         'amount': amount,
         'text': description,
         'date': date.toIso8601String(),

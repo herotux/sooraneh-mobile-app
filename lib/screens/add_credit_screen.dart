@@ -4,6 +4,9 @@ import 'package:daric/services/api_service.dart';
 import 'package:daric/widgets/my_date_picker.dart';
 import 'package:daric/widgets/main_scaffold.dart';
 import 'package:daric/widgets/person_dropdown.dart';
+import 'package:daric/models/person.dart';
+
+
 
 class AddCreditScreen extends StatefulWidget {
   @override
@@ -30,12 +33,13 @@ class _AddCreditScreenState extends State<AddCreditScreen> {
 
     final credit = Credit(
       id: 0,
-      personId: _selectedPersonId,
+      person: _selectedPersonId != null ? Person(id: _selectedPersonId!, firstName: '') : null,
       amount: int.parse(_amountController.text.trim()),
       date: _date!,
       payDate: _payDate!,
       description: null,
     );
+
 
     final success = await ApiService().addCredit(credit);
 

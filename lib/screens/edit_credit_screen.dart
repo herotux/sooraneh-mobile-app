@@ -4,6 +4,9 @@ import 'package:daric/services/api_service.dart';
 import 'package:daric/widgets/my_date_picker.dart';
 import 'package:daric/widgets/main_scaffold.dart';
 import 'package:daric/widgets/person_dropdown.dart';
+import 'package:daric/models/person.dart';
+
+
 
 class EditCreditScreen extends StatefulWidget {
   final Credit credit;
@@ -34,7 +37,7 @@ class _EditCreditScreenState extends State<EditCreditScreen> {
     _amountController = TextEditingController(text: widget.credit.amount.toString());
     _date = widget.credit.date;
     _payDate = widget.credit.payDate;
-    _selectedPersonId = widget.credit.person;
+    _selectedPersonId = widget.credit.person?.id; // ✅ استخراج id از شیء person
   }
 
   @override
@@ -51,7 +54,7 @@ class _EditCreditScreenState extends State<EditCreditScreen> {
 
     final updatedCredit = Credit(
       id: widget.credit.id,
-      person: _selectedPersonId,
+      person: _selectedPersonId != null ? Person(id: _selectedPersonId!, firstName: '') : null, // ✅ تبدیل id به آبجکت Person
       description: _descriptionController.text.trim(),
       amount: int.parse(_amountController.text.trim()),
       date: _date,

@@ -34,9 +34,9 @@ class _PersonDropdownState extends State<PersonDropdown> {
         if (persons != null) {
           final matched = persons.firstWhere(
             (p) => p.id == widget.selectedPersonId,
-            orElse: () => null,
+            orElse: () => Person(id: 0, firstName: 'نامشخص'),
           );
-          if (matched != null) {
+          if (matched.id != 0) {
             setState(() {
               _selectedPerson = matched;
             });
@@ -50,6 +50,7 @@ class _PersonDropdownState extends State<PersonDropdown> {
       _isLoadingInitial = false;
     });
   }
+
 
   @override
   Widget build(BuildContext context) {

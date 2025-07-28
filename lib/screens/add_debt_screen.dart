@@ -4,6 +4,9 @@ import 'package:daric/services/api_service.dart';
 import 'package:daric/widgets/my_date_picker.dart';
 import 'package:daric/widgets/main_scaffold.dart';
 import 'package:daric/widgets/person_dropdown.dart';
+import 'package:daric/models/person.dart';
+
+
 
 class AddDebtScreen extends StatefulWidget {
   @override
@@ -30,13 +33,13 @@ class _AddDebtScreenState extends State<AddDebtScreen> {
 
     final debt = Debt(
       id: 0,
-      personId: _selectedPersonId,
-      personName: '', // not used for creation
+      person: _selectedPersonId != null ? Person(id: _selectedPersonId!, firstName: '') : null,
       amount: int.parse(_amountController.text.trim()),
       date: _date!,
       payDate: _payDate!,
       description: _descriptionController.text.trim(),
     );
+
 
     final success = await ApiService().addDebt(debt);
 
