@@ -3,6 +3,10 @@ import 'package:shamsi_date/shamsi_date.dart';
 import 'package:daric/models/expense.dart';
 import 'package:daric/services/api_service.dart';
 import 'package:daric/widgets/main_scaffold.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
+
+
+
 
 class ExpenseScreen extends StatefulWidget {
   @override
@@ -64,57 +68,58 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
   Widget _buildExpenseItem(Expense exp) {
     final formattedDate = _formatJalali(exp.date);
 
-    return Dismissible(
+    return Slidable(
       key: Key(exp.id.toString()),
-      background: Container(
-        color: Colors.green,
-        alignment: Alignment.centerLeft,
-        padding: EdgeInsets.only(left: 20),
-        child: Icon(Icons.edit, color: Colors.white),
+      startActionPane: ActionPane(
+        motion: const ScrollMotion(),
+        extentRatio: 0.25,
+        children: [
+          SlidableAction(
+            onPressed: (_) async {
+              final updated = await Navigator.pushNamed(
+                context,
+                '/edit-expense',
+                arguments: exp,
+              );
+              if (updated == true) {
+                _loadExpenses();
+              }
+            },
+            backgroundColor: Colors.green,
+            foregroundColor: Colors.white,
+            icon: Icons.edit,
+            label: 'ویرایش',
+          ),
+        ],
       ),
-      secondaryBackground: Container(
-        color: Colors.red,
-        alignment: Alignment.centerRight,
-        padding: EdgeInsets.only(right: 20),
-        child: Icon(Icons.delete, color: Colors.white),
+      endActionPane: ActionPane(
+        motion: const ScrollMotion(),
+        extentRatio: 0.25,
+        children: [
+          SlidableAction(
+            onPressed: (_) async {
+              final confirm = await showDialog<bool>(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  title: Text('حذف هزینه'),
+                  content: Text('آیا از حذف این هزینه مطمئن هستید؟'),
+                  actions: [
+                    TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text('خیر')),
+                    TextButton(onPressed: () => Navigator.pop(ctx, true), child: Text('بله')),
+                  ],
+                ),
+              );
+              if (confirm == true && exp.id != null) {
+                await _deleteExpense(exp.id!);
+              }
+            },
+            backgroundColor: Colors.red,
+            foregroundColor: Colors.white,
+            icon: Icons.delete,
+            label: 'حذف',
+          ),
+        ],
       ),
-      confirmDismiss: (direction) async {
-        if (direction == DismissDirection.startToEnd) {
-          final updated = await Navigator.pushNamed(
-            context,
-            '/edit-expense',
-            arguments: exp,
-          );
-          if (updated == true) {
-            _loadExpenses();
-          }
-          return false;
-        } else if (direction == DismissDirection.endToStart) {
-          final confirm = await showDialog<bool>(
-            context: context,
-            builder: (ctx) => AlertDialog(
-              title: Text('حذف هزینه'),
-              content: Text('آیا از حذف این هزینه مطمئن هستید؟'),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(ctx).pop(false),
-                  child: Text('خیر'),
-                ),
-                TextButton(
-                  onPressed: () => Navigator.of(ctx).pop(true),
-                  child: Text('بله'),
-                ),
-              ],
-            ),
-          );
-          if (confirm == true && exp.id != null) {
-            await _deleteExpense(exp.id!);
-            return true;
-          }
-          return false;
-        }
-        return false;
-      },
       child: Card(
         margin: EdgeInsets.symmetric(vertical: 8),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -133,6 +138,7 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
       ),
     );
   }
+
 
 
   @override
