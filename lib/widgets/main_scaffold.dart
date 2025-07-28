@@ -5,7 +5,8 @@ class MainScaffold extends StatefulWidget {
   final Widget body;
   final String title;
   final Widget? floatingActionButton;
-
+  final List<Widget>? actions;
+  
   const MainScaffold({
     Key? key,
     required this.body,

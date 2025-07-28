@@ -139,7 +139,7 @@ class ApiService {
   }
 
   Future<bool> updateExpense(Expense expense) async {
-    if ((expense.id ?? 0) <= 0) {
+    if (expense.id != null && expense.id! <= 0) {
       print('updateExpense failed: invalid expense id');
       return false;
     }
@@ -531,7 +531,7 @@ class ApiService {
   }
 
   Future<bool> updateDebt(Debt debt) async {
-    if (debt.id <= 0) {
+    if (debt.id != null && debt.id! <= 0) {
       print('updateDebt failed: invalid debt id');
       return false;
     }
