@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:daric/models/debt.dart';
 import 'package:daric/services/api_service.dart';
 import 'package:daric/widgets/my_date_picker.dart';
- import 'package:daric/widgets/main_scaffold.dart';
+import 'package:daric/widgets/main_scaffold.dart';
+import 'package:daric/widgets/person_dropdown.dart';
 
- 
 class AddDebtScreen extends StatefulWidget {
   @override
   _AddDebtScreenState createState() => _AddDebtScreenState();
@@ -12,16 +12,16 @@ class AddDebtScreen extends StatefulWidget {
 
 class _AddDebtScreenState extends State<AddDebtScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _personController = TextEditingController();
   final _amountController = TextEditingController();
   final _descriptionController = TextEditingController();
   DateTime? _date;
   DateTime? _payDate;
   bool _isLoading = false;
   String? _message;
+  int? _selectedPersonId;
 
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate() || _date == null || _payDate == null) return;
+    if (!_formKey.currentState!.validate() || _date == null || _payDate == null || _selectedPersonId == null) return;
 
     setState(() {
       _isLoading = true;
@@ -30,7 +30,8 @@ class _AddDebtScreenState extends State<AddDebtScreen> {
 
     final debt = Debt(
       id: 0,
-      personName: _personController.text.trim(),
+      personId: _selectedPersonId,
+      personName: '', // not used for creation
       amount: int.parse(_amountController.text.trim()),
       date: _date!,
       payDate: _payDate!,
@@ -45,7 +46,7 @@ class _AddDebtScreenState extends State<AddDebtScreen> {
     });
 
     if (success) {
-      _personController.clear();
+      _selectedPersonId = null;
       _amountController.clear();
       _descriptionController.clear();
       _date = null;
@@ -56,7 +57,6 @@ class _AddDebtScreenState extends State<AddDebtScreen> {
 
   @override
   void dispose() {
-    _personController.dispose();
     _amountController.dispose();
     _descriptionController.dispose();
     super.dispose();
@@ -72,12 +72,11 @@ class _AddDebtScreenState extends State<AddDebtScreen> {
           key: _formKey,
           child: ListView(
             children: [
-              TextFormField(
-                controller: _personController,
-                decoration: InputDecoration(labelText: 'نام شخص'),
-                validator: (val) => val == null || val.isEmpty ? 'نام شخص را وارد کنید' : null,
+              PersonDropdown(
+                selectedPersonId: _selectedPersonId,
+                onChanged: (val) => setState(() => _selectedPersonId = val),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               TextFormField(
                 controller: _amountController,
                 keyboardType: TextInputType.number,
@@ -88,44 +87,33 @@ class _AddDebtScreenState extends State<AddDebtScreen> {
                   return null;
                 },
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               TextFormField(
                 controller: _descriptionController,
                 decoration: InputDecoration(labelText: 'توضیحات'),
                 validator: (val) => val == null || val.isEmpty ? 'توضیحات را وارد کنید' : null,
               ),
-              SizedBox(height: 16),
-
+              const SizedBox(height: 16),
               MyDatePicker(
                 label: 'تاریخ ثبت',
                 initialDate: _date,
-                onDateChanged: (selected) {
-                  setState(() => _date = selected);
-                },
+                onDateChanged: (selected) => setState(() => _date = selected),
               ),
-
-              SizedBox(height: 16),
-
+              const SizedBox(height: 16),
               MyDatePicker(
                 label: 'تاریخ بازپرداخت',
                 initialDate: _payDate,
-                onDateChanged: (selected) {
-                  setState(() => _payDate = selected);
-                },
+                onDateChanged: (selected) => setState(() => _payDate = selected),
               ),
-
-              SizedBox(height: 24),
-
-              if (_isLoading)
-                Center(child: CircularProgressIndicator())
-              else
-                ElevatedButton(
-                  onPressed: _submit,
-                  child: Text('ثبت بدهی'),
-                ),
-
+              const SizedBox(height: 24),
+              _isLoading
+                  ? Center(child: CircularProgressIndicator())
+                  : ElevatedButton(
+                      onPressed: _submit,
+                      child: Text('ثبت بدهی'),
+                    ),
               if (_message != null) ...[
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 Text(
                   _message!,
                   style: TextStyle(

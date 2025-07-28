@@ -3,8 +3,7 @@ import 'package:daric/models/debt.dart';
 import 'package:daric/services/api_service.dart';
 import 'package:daric/widgets/my_date_picker.dart';
 import 'package:daric/widgets/main_scaffold.dart';
-
-
+import 'package:daric/widgets/person_dropdown.dart';
 
 class EditDebtScreen extends StatefulWidget {
   final Debt debt;
@@ -19,11 +18,9 @@ class _EditDebtScreenState extends State<EditDebtScreen> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _descriptionController;
   late TextEditingController _amountController;
-
   late DateTime _date;
   late DateTime _payDate;
-
-  final ApiService _apiService = ApiService();
+  late int? _selectedPersonId;
   bool _isLoading = false;
 
   @override
@@ -33,6 +30,7 @@ class _EditDebtScreenState extends State<EditDebtScreen> {
     _amountController = TextEditingController(text: widget.debt.amount.toString());
     _date = widget.debt.date;
     _payDate = widget.debt.payDate;
+    _selectedPersonId = widget.debt.personId;
   }
 
   @override
@@ -43,21 +41,21 @@ class _EditDebtScreenState extends State<EditDebtScreen> {
   }
 
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate() || _selectedPersonId == null) return;
 
     setState(() => _isLoading = true);
 
     final updatedDebt = Debt(
       id: widget.debt.id,
-      personName: widget.debt.personName,
+      personId: _selectedPersonId,
+      personName: '', // not used
       description: _descriptionController.text.trim(),
       amount: int.parse(_amountController.text.trim()),
       date: _date,
       payDate: _payDate,
-      personId: widget.debt.personId,
     );
 
-    final success = await _apiService.updateDebt(updatedDebt);
+    final success = await ApiService().updateDebt(updatedDebt);
 
     setState(() => _isLoading = false);
 
@@ -78,10 +76,9 @@ class _EditDebtScreenState extends State<EditDebtScreen> {
           key: _formKey,
           child: ListView(
             children: [
-              TextFormField(
-                controller: _descriptionController,
-                decoration: InputDecoration(labelText: 'توضیحات'),
-                validator: (val) => val == null || val.isEmpty ? 'وارد کردن توضیحات الزامی است' : null,
+              PersonDropdown(
+                selectedPersonId: _selectedPersonId,
+                onChanged: (val) => setState(() => _selectedPersonId = val),
               ),
               const SizedBox(height: 16),
               TextFormField(
@@ -95,26 +92,25 @@ class _EditDebtScreenState extends State<EditDebtScreen> {
                   return null;
                 },
               ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _descriptionController,
+                decoration: InputDecoration(labelText: 'توضیحات'),
+                validator: (val) => val == null || val.isEmpty ? 'وارد کردن توضیحات الزامی است' : null,
+              ),
               const SizedBox(height: 24),
-
-              /// انتخاب تاریخ بدهی
               MyDatePicker(
                 label: 'تاریخ بدهی',
                 initialDate: _date,
                 onDateChanged: (newDate) => setState(() => _date = newDate),
               ),
-
               const SizedBox(height: 24),
-
-              /// انتخاب تاریخ پرداخت
               MyDatePicker(
                 label: 'تاریخ پرداخت',
                 initialDate: _payDate,
                 onDateChanged: (newDate) => setState(() => _payDate = newDate),
               ),
-
               const SizedBox(height: 32),
-
               _isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : ElevatedButton(
