@@ -6,7 +6,7 @@ class MainScaffold extends StatefulWidget {
   final String title;
   final Widget? floatingActionButton;
   final List<Widget>? actions;
-  
+
   const MainScaffold({
     Key? key,
     required this.body,
@@ -42,7 +42,7 @@ class _MainScaffoldState extends State<MainScaffold> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
-        actions: actions,
+        actions: widget.actions,
         leading: Builder(
           builder: (context) => IconButton(
             icon: const Icon(Icons.menu),
