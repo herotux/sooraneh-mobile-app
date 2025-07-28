@@ -96,7 +96,9 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
             ),
           );
           if (confirm == true) {
-            await _deleteExpense(exp.id);
+            if (exp.id != null) {
+              await _deleteExpense(exp.id!);
+            }
             return true;
           }
           return false;

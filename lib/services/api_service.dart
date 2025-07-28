@@ -237,7 +237,7 @@ class ApiService {
   }
 
   Future<bool> updateIncome(Income income) async {
-    if (income.id <= 0) {
+    if (income.id != null && income.id! <= 0) {
       print('updateIncome failed: invalid income id');
       return false;
     }

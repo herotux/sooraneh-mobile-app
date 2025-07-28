@@ -36,16 +36,16 @@ class _DashboardWidgetState extends State<DashboardWidget> {
 
     if (expenses != null) {
       for (var e in expenses) {
-        DateTime dt = DateTime.parse(e.date);
-        int monthIndex = Jalali.fromDateTime(dt).month - 1;
+        final dt = DateTime.parse(e.date);
+        final monthIndex = Jalali.fromDateTime(dt).month - 1;
         expenseData[monthIndex] += e.amount.toDouble();
       }
     }
 
     if (incomes != null) {
       for (var i in incomes) {
-        DateTime dt = DateTime.parse(i.date);
-        int monthIndex = Jalali.fromDateTime(dt).month - 1;
+        final dt = DateTime.parse(i.date);
+        final monthIndex = Jalali.fromDateTime(dt).month - 1;
         incomeData[monthIndex] += i.amount.toDouble();
       }
     }
@@ -53,14 +53,8 @@ class _DashboardWidgetState extends State<DashboardWidget> {
     setState(() {
       monthlyExpense = expenseData;
       monthlyIncome = incomeData;
-      latestExpenses = (expenses ?? [])
-          .map((e) => Expense.fromJson(e))
-          .toList()
-        ..sort((a, b) => b.date.compareTo(a.date));
-      latestIncomes = (incomes ?? [])
-          .map((i) => Income.fromJson(i))
-          .toList()
-        ..sort((a, b) => b.date.compareTo(a.date));
+      latestExpenses = (expenses ?? [])..sort((a, b) => b.date.compareTo(a.date));
+      latestIncomes = (incomes ?? [])..sort((a, b) => b.date.compareTo(a.date));
       latestExpenses = latestExpenses.take(5).toList();
       latestIncomes = latestIncomes.take(5).toList();
       isLoading = false;
@@ -68,10 +62,10 @@ class _DashboardWidgetState extends State<DashboardWidget> {
   }
 
   String _convertToPersianNumber(String input) {
-    const english = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-    const persian = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
-    for (int i = 0; i < english.length; i++) {
-      input = input.replaceAll(english[i], persian[i]);
+    const en = ['0','1','2','3','4','5','6','7','8','9'];
+    const fa = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+    for (int i = 0; i < en.length; i++) {
+      input = input.replaceAll(en[i], fa[i]);
     }
     return input;
   }
@@ -82,8 +76,8 @@ class _DashboardWidgetState extends State<DashboardWidget> {
   }
 
   Widget _buildBarChart() {
-    List<BarChartGroupData> barGroups = List.generate(12, (i) =>
-      BarChartGroupData(
+    final barGroups = List.generate(12, (i) {
+      return BarChartGroupData(
         x: i,
         barRods: [
           BarChartRodData(
@@ -99,8 +93,10 @@ class _DashboardWidgetState extends State<DashboardWidget> {
             borderRadius: BorderRadius.circular(4),
           ),
         ],
-      )
-    );
+      );
+    });
+
+    final maxY = [...monthlyIncome, ...monthlyExpense].fold<double>(0, (prev, val) => val > prev ? val : prev);
 
     return Directionality(
       textDirection: TextDirection.rtl,
@@ -109,7 +105,7 @@ class _DashboardWidgetState extends State<DashboardWidget> {
         child: BarChart(
           BarChartData(
             alignment: BarChartAlignment.spaceAround,
-            maxY: ([...monthlyIncome, ...monthlyExpense].reduce((a, b) => a > b ? a : b)) * 1.2,
+            maxY: maxY * 1.2,
             barGroups: barGroups,
             groupsSpace: 8,
             titlesData: FlTitlesData(
@@ -148,12 +144,16 @@ class _DashboardWidgetState extends State<DashboardWidget> {
     );
   }
 
-  Widget _buildList<T>({required String title, required List<T> items, required Widget Function(T) itemBuilder}) {
+  Widget _buildList<T>({
+    required String title,
+    required List<T> items,
+    required Widget Function(T) itemBuilder,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 8),
+        if (title.isNotEmpty)
+          Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         ...items.map(itemBuilder).toList(),
         const SizedBox(height: 16),
       ],
@@ -161,18 +161,20 @@ class _DashboardWidgetState extends State<DashboardWidget> {
   }
 
   Widget _buildExpenseItem(Expense e) => ListTile(
-    leading: Icon(Icons.money_off, color: Colors.red[700]),
-    title: Text(e.text, style: const TextStyle(fontWeight: FontWeight.bold)),
-    subtitle: Text(_formatJalaliDate(e.date)),
-    trailing: Text('${_convertToPersianNumber(e.amount.toString())} تومان', style: TextStyle(color: Colors.red[700])),
-  );
+        leading: Icon(Icons.money_off, color: Colors.red[700]),
+        title: Text(e.text, style: const TextStyle(fontWeight: FontWeight.bold)),
+        subtitle: Text(_formatJalaliDate(e.date)),
+        trailing: Text('${_convertToPersianNumber(e.amount.toString())} تومان',
+            style: TextStyle(color: Colors.red[700])),
+      );
 
   Widget _buildIncomeItem(Income i) => ListTile(
-    leading: Icon(Icons.attach_money, color: Colors.green[700]),
-    title: Text(i.text, style: const TextStyle(fontWeight: FontWeight.bold)),
-    subtitle: Text(_formatJalaliDate(i.date)),
-    trailing: Text('${_convertToPersianNumber(i.amount.toString())} تومان', style: TextStyle(color: Colors.green[700])),
-  );
+        leading: Icon(Icons.attach_money, color: Colors.green[700]),
+        title: Text(i.text, style: const TextStyle(fontWeight: FontWeight.bold)),
+        subtitle: Text(_formatJalaliDate(i.date)),
+        trailing: Text('${_convertToPersianNumber(i.amount.toString())} تومان',
+            style: TextStyle(color: Colors.green[700])),
+      );
 
   void _onAddPressed() {
     showModalBottomSheet(
