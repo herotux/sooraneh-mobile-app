@@ -3,6 +3,7 @@ import 'package:daric/models/debt.dart';
 import 'package:daric/services/api_service.dart';
 import 'package:daric/widgets/main_scaffold.dart';
 import 'package:daric/widgets/common_filter_sheet.dart';
+import 'package:daric/widgets/my_date_picker_modal.dart';
 import 'edit_debt_screen.dart';
 
 class DebtListScreen extends StatefulWidget {
@@ -20,7 +21,6 @@ class _DebtListScreenState extends State<DebtListScreen> {
   int? _fromAmount;
   int? _toAmount;
   String? _description;
-  bool? _isPaid;
   String _sort = 'asc';
 
   @override
@@ -63,10 +63,11 @@ class _DebtListScreenState extends State<DebtListScreen> {
       if (_toDate != null && d.date.isAfter(_toDate!)) return false;
       if (_fromAmount != null && d.amount < _fromAmount!) return false;
       if (_toAmount != null && d.amount > _toAmount!) return false;
-      if (_description != null && _description!.isNotEmpty && !(d.description?.contains(_description!) ?? false)) {
+      if (_description != null &&
+          _description!.isNotEmpty &&
+          !(d.description?.contains(_description!) ?? false)) {
         return false;
       }
-      if (_isPaid != null && d.isPaid != _isPaid) return false;
       return true;
     }).toList();
 
@@ -110,7 +111,6 @@ class _DebtListScreenState extends State<DebtListScreen> {
           'fromAmount': _fromAmount?.toString(),
           'toAmount': _toAmount?.toString(),
           'description': _description,
-          'isPaid': _isPaid,
           'sort': _sort,
         },
         onApply: (filters) {
@@ -120,7 +120,6 @@ class _DebtListScreenState extends State<DebtListScreen> {
             _fromAmount = int.tryParse(filters['fromAmount'] ?? '');
             _toAmount = int.tryParse(filters['toAmount'] ?? '');
             _description = filters['description'];
-            _isPaid = filters['isPaid'];
             _sort = filters['sort'];
           });
         },
@@ -145,6 +144,7 @@ class _DebtListScreenState extends State<DebtListScreen> {
               padding: EdgeInsets.all(16),
               child: Column(
                 children: [
+                  /// مجموع بدهی‌ها
                   Container(
                     padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                     decoration: BoxDecoration(
@@ -161,6 +161,8 @@ class _DebtListScreenState extends State<DebtListScreen> {
                     ),
                   ),
                   SizedBox(height: 16),
+
+                  /// لیست بدهی‌ها
                   Expanded(
                     child: _filteredDebts.isEmpty
                         ? Center(child: Text('بدهی‌ای یافت نشد'))
