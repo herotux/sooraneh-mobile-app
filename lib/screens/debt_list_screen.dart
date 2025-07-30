@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:daric/models/debt.dart';
 import 'package:daric/services/api_service.dart';
 import 'package:daric/widgets/main_scaffold.dart';
-import 'package:daric/widgets/my_date_picker.dart';
+import 'package:daric/widgets/common_filter_sheet.dart';
 import 'edit_debt_screen.dart';
 
 class DebtListScreen extends StatefulWidget {
@@ -13,9 +13,15 @@ class DebtListScreen extends StatefulWidget {
 class _DebtListScreenState extends State<DebtListScreen> {
   final ApiService _apiService = ApiService();
   List<Debt> _allDebts = [];
+  bool _isLoading = true;
+
   DateTime? _fromDate;
   DateTime? _toDate;
-  bool _isLoading = true;
+  int? _fromAmount;
+  int? _toAmount;
+  String? _description;
+  bool? _isPaid;
+  String _sort = 'asc';
 
   @override
   void initState() {
@@ -52,14 +58,21 @@ class _DebtListScreenState extends State<DebtListScreen> {
   }
 
   List<Debt> get _filteredDebts {
-    return _allDebts
-        .where((d) {
-          if (_fromDate != null && d.date.isBefore(_fromDate!)) return false;
-          if (_toDate != null && d.date.isAfter(_toDate!)) return false;
-          return true;
-        })
-        .toList()
-      ..sort((a, b) => a.payDate.compareTo(b.payDate));
+    List<Debt> filtered = _allDebts.where((d) {
+      if (_fromDate != null && d.date.isBefore(_fromDate!)) return false;
+      if (_toDate != null && d.date.isAfter(_toDate!)) return false;
+      if (_fromAmount != null && d.amount < _fromAmount!) return false;
+      if (_toAmount != null && d.amount > _toAmount!) return false;
+      if (_description != null && _description!.isNotEmpty && !(d.description?.contains(_description!) ?? false)) {
+        return false;
+      }
+      if (_isPaid != null && d.isPaid != _isPaid) return false;
+      return true;
+    }).toList();
+
+    filtered.sort((a, b) =>
+        _sort == 'asc' ? a.payDate.compareTo(b.payDate) : b.payDate.compareTo(a.payDate));
+    return filtered;
   }
 
   int get _totalAmount => _filteredDebts.fold(0, (sum, d) => sum + d.amount);
@@ -82,39 +95,56 @@ class _DebtListScreenState extends State<DebtListScreen> {
     return 'نامشخص';
   }
 
+  void _openFilterSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => CommonFilterSheet(
+        type: 'debt',
+        initialValues: {
+          'fromDate': _fromDate,
+          'toDate': _toDate,
+          'fromAmount': _fromAmount?.toString(),
+          'toAmount': _toAmount?.toString(),
+          'description': _description,
+          'isPaid': _isPaid,
+          'sort': _sort,
+        },
+        onApply: (filters) {
+          setState(() {
+            _fromDate = filters['fromDate'];
+            _toDate = filters['toDate'];
+            _fromAmount = int.tryParse(filters['fromAmount'] ?? '');
+            _toAmount = int.tryParse(filters['toAmount'] ?? '');
+            _description = filters['description'];
+            _isPaid = filters['isPaid'];
+            _sort = filters['sort'];
+          });
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return MainScaffold(
       title: "لیست بدهی‌ها",
+      actions: [
+        IconButton(
+          icon: Icon(Icons.filter_list),
+          onPressed: _openFilterSheet,
+          tooltip: 'فیلتر',
+        ),
+      ],
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
           : Padding(
               padding: EdgeInsets.all(16),
               child: Column(
                 children: [
-                  /// فیلتر تاریخ
-                  Row(
-                    children: [
-                      Expanded(
-                        child: MyDatePicker(
-                          label: 'از تاریخ',
-                          initialDate: _fromDate,
-                          onDateChanged: (d) => setState(() => _fromDate = d),
-                        ),
-                      ),
-                      SizedBox(width: 8),
-                      Expanded(
-                        child: MyDatePicker(
-                          label: 'تا تاریخ',
-                          initialDate: _toDate,
-                          onDateChanged: (d) => setState(() => _toDate = d),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 16),
-
-                  /// نمایش مجموع بدهی‌ها
                   Container(
                     padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                     decoration: BoxDecoration(
@@ -125,15 +155,12 @@ class _DebtListScreenState extends State<DebtListScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('جمع بدهی‌ها در بازه:', style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text('جمع بدهی‌ها:', style: TextStyle(fontWeight: FontWeight.bold)),
                         Text('$_totalAmount تومان', style: TextStyle(color: Colors.red[800], fontSize: 16)),
                       ],
                     ),
                   ),
-
                   SizedBox(height: 16),
-
-                  /// لیست بدهی‌ها
                   Expanded(
                     child: _filteredDebts.isEmpty
                         ? Center(child: Text('بدهی‌ای یافت نشد'))

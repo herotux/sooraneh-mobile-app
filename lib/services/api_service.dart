@@ -92,7 +92,10 @@ class ApiService {
   Future<List<T>?> _getList<T>(
       String endpoint, T Function(Map<String, dynamic>) fromJson) async {
     final headers = await _authHeaders();
-    if (headers == null) return null;
+    if (headers == null) {
+      print('⚠️ No auth token found.');
+      return null;
+    }
     try {
       final res = await http.get(Uri.parse('$_baseUrl/$endpoint'), headers: headers);
       if (res.statusCode == 200) {
