@@ -1,0 +1,50 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.daric_new">
+
+    <!-- ✅ دسترسی به اینترنت -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- ✅ دسترسی اختیاری برای دیدن وضعیت شبکه (مثلاً قبل از درخواست API) -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application
+        android:label="دریک"
+        android:name="${applicationName}"
+        android:icon="@mipmap/ic_launcher">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:taskAffinity=""
+            android:theme="@style/LaunchTheme"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize">
+
+            <!-- 🌈 تم اولیه هنگام بارگذاری اپلیکیشن -->
+            <meta-data
+                android:name="io.flutter.embedding.android.NormalTheme"
+                android:resource="@style/NormalTheme" />
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- 🛠️ مورد استفاده Flutter برای رجیستر کردن پلاگین‌ها -->
+        <meta-data
+            android:name="flutterEmbedding"
+            android:value="2" />
+    </application>
+
+    <!-- 📄 برای پردازش متن از intent -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.PROCESS_TEXT" />
+            <data android:mimeType="text/plain" />
+        </intent>
+    </queries>
+
+</manifest>
