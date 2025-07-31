@@ -48,7 +48,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
         amount: _amount!.toInt(),
         date: _selectedDate.toIso8601String(),
         category: _selectedCategoryId,
-        person: _selectedPersonId,
+        person: _selectedPerson?.id,
         tag: _selectedTagId,
       );
 
