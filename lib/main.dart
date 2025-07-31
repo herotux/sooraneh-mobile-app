@@ -73,6 +73,11 @@ class MyApp extends StatelessWidget {
           final debt = ModalRoute.of(context)!.settings.arguments as Debt;
           return EditDebtScreen(debt: debt);
         },
+        '/edit-expense': (context) {
+          final expense = ModalRoute.of(context)!.settings.arguments as Expense;
+          return EditExpenseScreen(expense: expense);
+        },
+
         '/settings': (context) => SettingsScreen(),
         '/logs': (context) => LogScreen(),
         '/persons': (context) => PersonsScreen(),
