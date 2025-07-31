@@ -22,6 +22,8 @@ import 'package:daric/screens/add_expense_screen.dart';
 import 'package:daric/screens/edit_expense_screen.dart';
 import 'package:daric/screens/log_screen.dart';
 import 'package:daric/screens/persons_screen.dart';
+import 'package:daric/models/expense.dart';
+
 
 
 
