@@ -19,6 +19,7 @@ import 'package:daric/screens/add_debt_screen.dart';
 import 'package:daric/screens/settings_screen.dart';
 import 'package:daric/screens/add_income_screen.dart';
 import 'package:daric/screens/add_expense_screen.dart';
+import 'package:daric/screens/edit_expense_screen.dart';
 import 'package:daric/screens/log_screen.dart';
 import 'package:daric/screens/persons_screen.dart';
 
