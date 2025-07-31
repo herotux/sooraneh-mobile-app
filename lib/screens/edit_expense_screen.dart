@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shamsi_date/shamsi_date.dart';
 import 'package:daric/models/expense.dart';
 import 'package:daric/services/api_service.dart';
-import 'widgets/my_date_picker.dart';
+import 'package:daric/widgets/my_date_picker.dart';
 
 class EditExpenseScreen extends StatefulWidget {
   final Expense expense;
