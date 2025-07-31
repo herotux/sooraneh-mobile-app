@@ -29,7 +29,6 @@ class Debt {
       );
 
   Map<String, dynamic> toJson() => {
-        if (id != null) 'id': id,
         if (personId != null) 'person_id': personId,
         'amount': amount,
         'text': description,
