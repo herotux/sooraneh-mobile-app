@@ -1,3 +1,5 @@
+import 'person.dart';
+
 class Expense {
   final int? id;
   final String text;
@@ -7,7 +9,7 @@ class Expense {
   final int? personId;
   final Person? person;
   final int? tag;
-
+  
   Expense({
     this.id,
     required this.text,

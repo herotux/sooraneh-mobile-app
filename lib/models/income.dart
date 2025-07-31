@@ -1,3 +1,5 @@
+import 'person.dart';
+
 class Income {
   final int? id;
   final int amount;
