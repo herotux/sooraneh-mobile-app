@@ -33,16 +33,12 @@ class Income {
       );
 
   Map<String, Object?> toJson() => {
-        if (person != null) 'person': {
-          'first_name': person!.firstName,
-          'last_name': person!.lastName,
-          'relation': person!.relation,
-        },
-        if (personId != null) 'person_id': personId,
-        'amount': amount,
-        'text': text,
-        'date': date,
-        if (category != null) 'category': category,
-        if (tag != null) 'tag': tag,
-      };
+    'person_id': personId, // فقط این کافیست
+    'amount': amount,
+    'text': text,
+    'date': date,
+    if (category != null) 'category': category,
+    if (tag != null) 'tag': tag,
+  };
+
 }
