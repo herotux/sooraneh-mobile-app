@@ -16,9 +16,8 @@ class EditExpenseScreen extends StatefulWidget {
 class _EditExpenseScreenState extends State<EditExpenseScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  late TextEditingController _titleController;
+  late TextEditingController _textController;
   late TextEditingController _amountController;
-  late TextEditingController _descriptionController;
 
   DateTime? _selectedDate;
 
@@ -29,10 +28,9 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
   @override
   void initState() {
     super.initState();
-    _titleController = TextEditingController(text: widget.expense.title);
+    _textController = TextEditingController(text: widget.expense.text);
     _amountController = TextEditingController(text: widget.expense.amount.toString());
-    _descriptionController = TextEditingController(text: widget.expense.description ?? '');
-    _selectedDate = widget.expense.date ?? DateTime.now();
+    _selectedDate = DateTime.tryParse(widget.expense.date) ?? DateTime.now();
   }
 
   DateTime _jalaliToGregorian(DateTime jalaliDate) {
@@ -57,15 +55,16 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
 
     setState(() => _loading = true);
 
-    // تبدیل تاریخ شمسی به میلادی
     final gregorianDate = _jalaliToGregorian(_selectedDate!);
 
     final updatedExpense = Expense(
       id: widget.expense.id,
-      title: _titleController.text.trim(),
-      amount: double.tryParse(_amountController.text.trim()) ?? 0,
-      description: _descriptionController.text.trim(),
-      date: gregorianDate,
+      text: _textController.text.trim(),
+      amount: int.tryParse(_amountController.text.trim()) ?? 0,
+      date: gregorianDate.toIso8601String(),
+      category: widget.expense.category,
+      person: widget.expense.person,
+      tag: widget.expense.tag,
     );
 
     final success = await _apiService.updateExpense(updatedExpense);
@@ -81,9 +80,8 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
 
   @override
   void dispose() {
-    _titleController.dispose();
+    _textController.dispose();
     _amountController.dispose();
-    _descriptionController.dispose();
     super.dispose();
   }
 
@@ -100,7 +98,7 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
                 child: ListView(
                   children: [
                     TextFormField(
-                      controller: _titleController,
+                      controller: _textController,
                       decoration: const InputDecoration(labelText: 'عنوان'),
                       validator: (value) =>
                           value == null || value.isEmpty ? 'عنوان را وارد کنید' : null,
@@ -108,16 +106,10 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
                     const SizedBox(height: 12),
                     TextFormField(
                       controller: _amountController,
-                      keyboardType: TextInputType.numberWithOptions(decimal: true),
+                      keyboardType: TextInputType.number,
                       decoration: const InputDecoration(labelText: 'مبلغ'),
                       validator: (value) =>
                           value == null || value.isEmpty ? 'مبلغ را وارد کنید' : null,
-                    ),
-                    const SizedBox(height: 12),
-                    TextFormField(
-                      controller: _descriptionController,
-                      decoration: const InputDecoration(labelText: 'توضیحات'),
-                      maxLines: 3,
                     ),
                     const SizedBox(height: 20),
                     MyDatePicker(
