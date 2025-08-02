@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:daric/models/expense.dart';
 import 'package:daric/services/api_service.dart';
-import 'package:daric/widgets/main_scaffold.dart';
+import 'package:daric/widgets/my_date_picker.dart';
 import 'package:daric/widgets/person_dropdown.dart';
 import 'package:daric/widgets/my_date_picker_modal.dart';
-import 'package:shamsi_date/shamsi_date.dart';
 
 class AddExpenseScreen extends StatefulWidget {
   const AddExpenseScreen({Key? key}) : super(key: key);
@@ -20,6 +19,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   String _description = '';
   double? _amount;
   DateTime _selectedDate = DateTime.now();
+
   int? _selectedCategoryId;
   int? _selectedPersonId;
   int? _selectedTagId;
@@ -27,15 +27,15 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   bool _isSaving = false;
   String? _errorMessage;
 
-  Future<void> _pickDate() async {
-    final picked = await showMyDatePickerModal(
+  Future<void> _selectDate() async {
+    final pickedDate = await showMyDatePickerModal(
       context: context,
-      label: 'تاریخ هزینه',
+      label: 'انتخاب تاریخ',
       initialDate: _selectedDate,
     );
-    if (picked != null) {
+    if (pickedDate != null) {
       setState(() {
-        _selectedDate = picked;
+        _selectedDate = pickedDate;
       });
     }
   }
@@ -85,8 +85,8 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   Widget build(BuildContext context) {
     return Directionality(
       textDirection: TextDirection.rtl,
-      child: MainScaffold(
-        title: 'افزودن هزینه',
+      child: Scaffold(
+        appBar: AppBar(title: const Text('افزودن هزینه')),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: _isSaving
@@ -132,28 +132,22 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                             _amount = double.tryParse(val!.replaceAll(',', '')),
                       ),
                       const SizedBox(height: 16),
-                      GestureDetector(
-                        onTap: _pickDate,
-                        child: AbsorbPointer(
-                          child: TextFormField(
-                            decoration: InputDecoration(
-                              labelText: 'تاریخ هزینه',
-                              border: OutlineInputBorder(),
-                              suffixIcon: Icon(Icons.calendar_today),
-                            ),
-                            controller: TextEditingController(
-                              text: Jalali.fromDateTime(_selectedDate)
-                                  .formatCompactDate(),
-                            ),
+                      InkWell(
+                        onTap: _selectDate,
+                        child: InputDecorator(
+                          decoration: const InputDecoration(
+                            labelText: 'تاریخ هزینه',
+                            border: OutlineInputBorder(),
+                          ),
+                          child: Text(
+                            '${_selectedDate.year}/${_selectedDate.month.toString().padLeft(2, '0')}/${_selectedDate.day.toString().padLeft(2, '0')}',
                           ),
                         ),
                       ),
                       const SizedBox(height: 16),
                       PersonDropdown(
                         selectedPersonId: _selectedPersonId,
-                        onChanged: (id) {
-                          setState(() => _selectedPersonId = id);
-                        },
+                        onChanged: (id) => _selectedPersonId = id,
                       ),
                       if (_errorMessage != null) ...[
                         const SizedBox(height: 16),
