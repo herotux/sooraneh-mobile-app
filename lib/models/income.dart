@@ -32,13 +32,20 @@ class Income {
         tag: json['tag'],
       );
 
-  Map<String, Object?> toJson() => {
-    'person_id': personId, // فقط این کافیست
-    'amount': amount,
-    'text': text,
-    'date': date,
-    if (category != null) 'category': category,
-    if (tag != null) 'tag': tag,
-  };
+  Map<String, dynamic> toJson() {
+    if (personId == null) {
+      throw Exception('personId is required but null.');
+    }
+
+    return {
+      'person_id': personId,
+      'amount': amount,
+      'text': text,
+      'date': date,
+      if (tag != null) 'tag': tag,
+      if (category != null) 'category': category,
+    };
+  }
+
 
 }

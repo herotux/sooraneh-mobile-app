@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:daric/models/expense.dart';
 import 'package:daric/services/api_service.dart';
 import 'package:daric/widgets/main_scaffold.dart';
-import 'package:daric/widgets/my_date_picker.dart';
+import 'package:daric/widgets/person_dropdown.dart';
+import 'package:daric/widgets/my_date_picker_modal.dart';
+import 'package:shamsi_date/shamsi_date.dart';
 
 class AddExpenseScreen extends StatefulWidget {
   const AddExpenseScreen({Key? key}) : super(key: key);
@@ -18,7 +20,6 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   String _description = '';
   double? _amount;
   DateTime _selectedDate = DateTime.now();
-
   int? _selectedCategoryId;
   int? _selectedPersonId;
   int? _selectedTagId;
@@ -26,10 +27,17 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   bool _isSaving = false;
   String? _errorMessage;
 
-  void _onDateChanged(DateTime newDate) {
-    setState(() {
-      _selectedDate = newDate;
-    });
+  Future<void> _pickDate() async {
+    final picked = await showMyDatePickerModal(
+      context: context,
+      label: 'تاریخ هزینه',
+      initialDate: _selectedDate,
+    );
+    if (picked != null) {
+      setState(() {
+        _selectedDate = picked;
+      });
+    }
   }
 
   Future<void> _saveExpense() async {
@@ -124,13 +132,29 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                             _amount = double.tryParse(val!.replaceAll(',', '')),
                       ),
                       const SizedBox(height: 16),
-
-                      MyDatePicker(
-                        label: 'تاریخ هزینه',
-                        initialDate: _selectedDate,
-                        onDateChanged: _onDateChanged,
+                      GestureDetector(
+                        onTap: _pickDate,
+                        child: AbsorbPointer(
+                          child: TextFormField(
+                            decoration: InputDecoration(
+                              labelText: 'تاریخ هزینه',
+                              border: OutlineInputBorder(),
+                              suffixIcon: Icon(Icons.calendar_today),
+                            ),
+                            controller: TextEditingController(
+                              text: Jalali.fromDateTime(_selectedDate)
+                                  .formatCompactDate(),
+                            ),
+                          ),
+                        ),
                       ),
-
+                      const SizedBox(height: 16),
+                      PersonDropdown(
+                        selectedPersonId: _selectedPersonId,
+                        onChanged: (id) {
+                          setState(() => _selectedPersonId = id);
+                        },
+                      ),
                       if (_errorMessage != null) ...[
                         const SizedBox(height: 16),
                         Text(
@@ -139,7 +163,6 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                           textAlign: TextAlign.center,
                         ),
                       ],
-
                       const SizedBox(height: 24),
                       ElevatedButton(
                         onPressed: _saveExpense,
