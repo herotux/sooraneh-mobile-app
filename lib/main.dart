@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart'; // اضافه شد
+import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+
 import 'package:daric/theme/app_theme.dart';
 import 'package:daric/screens/login_screen.dart';
 import 'package:daric/screens/home_screen.dart';
@@ -24,11 +26,12 @@ import 'package:daric/screens/log_screen.dart';
 import 'package:daric/screens/persons_screen.dart';
 import 'package:daric/models/expense.dart';
 
-
-
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+
+  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+
   final token = await JwtStorage.getToken();
   runApp(MyApp(initialRoute: token != null ? '/home' : '/login'));
 }
@@ -80,11 +83,9 @@ class MyApp extends StatelessWidget {
           final expense = ModalRoute.of(context)!.settings.arguments as Expense;
           return EditExpenseScreen(expense: expense);
         },
-
         '/settings': (context) => SettingsScreen(),
         '/logs': (context) => LogScreen(),
         '/persons': (context) => PersonsScreen(),
-        
       },
     );
   }
