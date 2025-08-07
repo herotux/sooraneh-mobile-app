@@ -3,7 +3,7 @@ import 'package:daric/models/debt.dart';
 import 'package:daric/services/api_service.dart';
 import 'package:daric/widgets/main_scaffold.dart';
 import 'package:daric/widgets/common_filter_sheet.dart';
-import 'package:daric/widgets/my_date_picker_modal.dart';
+import 'package:daric/widgets/daric_list_card.dart';
 import 'edit_debt_screen.dart';
 
 class DebtListScreen extends StatefulWidget {
@@ -170,6 +170,7 @@ class _DebtListScreenState extends State<DebtListScreen> {
                             itemCount: _filteredDebts.length,
                             itemBuilder: (context, index) {
                               final debt = _filteredDebts[index];
+
                               return Dismissible(
                                 key: Key(debt.id.toString()),
                                 background: Container(
@@ -214,28 +215,14 @@ class _DebtListScreenState extends State<DebtListScreen> {
                                   }
                                   return false;
                                 },
-                                child: Container(
-                                  margin: EdgeInsets.only(bottom: 12),
-                                  padding: EdgeInsets.all(12),
-                                  decoration: BoxDecoration(
-                                    color: _getCardColor(debt),
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(color: Colors.grey[300]!),
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'به ${_personDisplayName(debt)}',
-                                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                                      ),
-                                      SizedBox(height: 4),
-                                      Text('مبلغ: ${debt.amount} تومان'),
-                                      SizedBox(height: 4),
-                                      Text('گرفته شده در: ${debt.date.toLocal().toString().split(" ")[0]}'),
-                                      Text('سررسید: ${debt.payDate.toLocal().toString().split(" ")[0]}'),
-                                    ],
-                                  ),
+                                child: DaricListCard(
+                                  title: 'به ${_personDisplayName(debt)}',
+                                  subtitle: debt.description,
+                                  trailingText: '${debt.amount} تومان',
+                                  date: 'گرفته شده: ${debt.date.toLocal().toString().split(" ")[0]}',
+                                  secondDate: 'سررسید: ${debt.payDate.toLocal().toString().split(" ")[0]}',
+                                  backgroundColor: _getCardColor(debt),
+                                  onTap: () => _editDebt(debt),
                                 ),
                               );
                             },
