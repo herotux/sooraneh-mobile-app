@@ -34,7 +34,7 @@ import 'package:daric/models/expense.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await FullScreenHelper.enableImmersiveMode();
+  FullScreenHelper.enableImmersiveMode();
 
   final token = await JwtStorage.getToken();
   runApp(MyApp(initialRoute: token != null ? '/home' : '/login'));
