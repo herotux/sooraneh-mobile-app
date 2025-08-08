@@ -7,8 +7,6 @@ import 'package:daric/models/expense.dart';
 import 'package:daric/models/credit.dart';
 import 'package:daric/models/debt.dart';
 
-
-
 class FinanceFormWidget extends StatefulWidget {
   final EntryType type;
   final dynamic initialEntry;
@@ -90,6 +88,7 @@ class _FinanceFormWidgetState extends State<FinanceFormWidget> {
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     _formKey.currentState!.save();
+
     setState(() {
       _isSaving = true;
       _errorMessage = null;
@@ -97,27 +96,33 @@ class _FinanceFormWidgetState extends State<FinanceFormWidget> {
 
     dynamic entry;
     try {
+      final id = widget.initialEntry?.id; // گرفتن id برای حالت ویرایش
+
       switch (widget.type) {
         case EntryType.income:
           entry = Income(
+            id: id,
             amount: _amount!.toInt(),
             text: _description,
             date: _date.toIso8601String(),
             personId: _personId,
           );
           break;
+
         case EntryType.expense:
           entry = Expense(
+            id: id,
             amount: _amount!.toInt(),
             text: _description,
             date: _date.toIso8601String(),
             personId: _personId,
           );
           break;
+
         case EntryType.credit:
           if (_payDate == null) throw Exception("تاریخ تسویه لازم است");
           entry = Credit(
-            id: widget.initialEntry?.id ?? 0,
+            id: id ?? 0,
             amount: _amount!.toInt(),
             description: _description,
             date: _date,
@@ -125,10 +130,11 @@ class _FinanceFormWidgetState extends State<FinanceFormWidget> {
             personId: _personId,
           );
           break;
+
         case EntryType.debt:
           if (_payDate == null) throw Exception("تاریخ تسویه لازم است");
           entry = Debt(
-            id: widget.initialEntry?.id ?? 0,
+            id: id ?? 0,
             amount: _amount!.toInt(),
             description: _description,
             date: _date,
