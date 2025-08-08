@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:daric/utils/jwt_storage.dart';
+import 'package:daric/utils/full_screen_helper.dart';
 
 class MainScaffold extends StatefulWidget {
   final Widget body;
@@ -20,6 +22,25 @@ class MainScaffold extends StatefulWidget {
 }
 
 class _MainScaffoldState extends State<MainScaffold> {
+  @override
+  void initState() {
+    super.initState();
+    // ✅ فعال‌سازی Immerse Mode در هر صفحه‌ای که از MainScaffold استفاده می‌کند
+    FullScreenHelper.enableImmersiveMode();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // ✅ فعال‌سازی خودمخفی‌شدن ناوبری هنگام تعامل
+      FullScreenHelper.attachAutoHideOnUserInteraction();
+    });
+  }
+
+  @override
+  void dispose() {
+    // ✅ تمیزکاری
+    FullScreenHelper.dispose();
+    super.dispose();
+  }
+
   final List<_MenuItem> menuItems = [
     _MenuItem(title: 'داشبورد', icon: Icons.dashboard, route: '/home'),
     _MenuItem(title: 'دسته‌بندی‌ها', icon: Icons.category, route: '/categories'),
@@ -27,9 +48,7 @@ class _MainScaffoldState extends State<MainScaffold> {
     _MenuItem(title: 'طلب‌ها', icon: Icons.attach_money, route: '/credit-list'),
     _MenuItem(title: 'هزینه‌ها', icon: Icons.explicit, route: '/expense-list'),
     _MenuItem(title: 'درآمدها', icon: Icons.account_balance_wallet, route: '/income-list'),
-
     _MenuItem(title: 'اشخاص', icon: Icons.people, route: '/persons'),
-
     _MenuItem(title: 'تنظیمات', icon: Icons.settings, route: '/settings'),
   ];
 

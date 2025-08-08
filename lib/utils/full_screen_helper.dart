@@ -1,34 +1,30 @@
-import 'dart:async';
-import 'dart:ui';
-
 import 'package:flutter/services.dart';
+import 'package:flutter/material.dart';
 
 class FullScreenHelper {
-  static Timer? _hideTimer;
-
-  /// فعال‌سازی حالت immersiveSticky (تمام‌صفحه)
   static void enableImmersiveMode() {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky, overlays: []);
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      systemNavigationBarColor: Colors.transparent,
+    ));
   }
 
-  /// شروع شنیدن gesture های کاربر و مخفی کردن دوباره دکمه‌ها
+  static void disableImmersiveMode() {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge, overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom]);
+  }
+
   static void attachAutoHideOnUserInteraction() {
-    final gestureBinding = PlatformDispatcher.instance;
-
-    gestureBinding.onPointerDataPacket = (PointerDataPacket packet) {
-      _scheduleAutoHide();
-    };
-  }
-
-  /// زمان‌بندی برای مخفی‌سازی دوباره بعد از ۲ ثانیه
-  static void _scheduleAutoHide() {
-    _hideTimer?.cancel();
-    _hideTimer = Timer(const Duration(seconds: 2), () {
-      enableImmersiveMode();
+    // فقط یک بار فعال شود
+    SystemChannels.lifecycle.setMessageHandler((msg) {
+      if (msg == 'AppLifecycleState.resumed') {
+        enableImmersiveMode();
+      }
+      return Future.value();
     });
   }
 
   static void dispose() {
-    _hideTimer?.cancel();
+    SystemChannels.lifecycle.setMessageHandler(null);
   }
 }

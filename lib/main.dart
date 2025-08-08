@@ -34,36 +34,21 @@ import 'package:daric/models/expense.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  FullScreenHelper.enableImmersiveMode();
+  // فقط یک بار Immerse Mode را تنظیم کن — اما نه فعال کن
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+    systemNavigationBarColor: Colors.transparent,
+  ));
 
+  // اجازه دهید صفحات خودشان Immerse Mode را فعال/غیرفعال کنند
   final token = await JwtStorage.getToken();
   runApp(MyApp(initialRoute: token != null ? '/home' : '/login'));
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   final String initialRoute;
 
   const MyApp({required this.initialRoute, Key? key}) : super(key: key);
-
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  @override
-  void initState() {
-    super.initState();
-    FullScreenHelper.enableImmersiveMode();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      FullScreenHelper.attachAutoHideOnUserInteraction();
-    });
-  }
-
-  @override
-  void dispose() {
-    FullScreenHelper.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +66,7 @@ class _MyAppState extends State<MyApp> {
         GlobalCupertinoLocalizations.delegate,
       ],
       theme: AppTheme.lightTheme,
-      initialRoute: widget.initialRoute,
+      initialRoute: initialRoute,
       routes: {
         '/login': (context) => LoginScreen(),
         '/home': (context) => HomeScreen(),
