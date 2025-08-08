@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:shamsi_date/shamsi_date.dart';
-import 'package:daric/models/expense.dart';
-import 'package:daric/services/api_service.dart';
-import 'package:daric/widgets/main_scaffold.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-
-
-
+import 'package:daric/services/api_service.dart';
+import 'package:daric/models/expense.dart';
+import 'package:daric/widgets/daric_list_card.dart';
+import 'package:daric/widgets/main_scaffold.dart';
 
 class ExpenseScreen extends StatefulWidget {
   @override
@@ -14,7 +12,7 @@ class ExpenseScreen extends StatefulWidget {
 }
 
 class _ExpenseScreenState extends State<ExpenseScreen> {
-  final ApiService _apiService = ApiService();
+  final ApiService _api = ApiService();
   List<Expense> _expenses = [];
 
   @override
@@ -24,66 +22,38 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
   }
 
   Future<void> _loadExpenses() async {
-    final data = await _apiService.getExpenses();
-    if (data != null) {
-      setState(() {
-        _expenses = data;
-        _expenses.sort((a, b) => b.date.compareTo(a.date)); // مرتب‌سازی نزولی
-      });
-    } else {
-      setState(() => _expenses = []);
-    }
+    final data = await _api.getExpenses();
+    setState(() => _expenses = data ?? []);
   }
 
-  String _formatJalali(String enDateString) {
+  String _formatJalali(String enDate) {
     try {
-      final dateTime = DateTime.parse(enDateString);
-      final jDate = Jalali.fromDateTime(dateTime);
-      return '${jDate.year}/${jDate.month.toString().padLeft(2, '0')}/${jDate.day.toString().padLeft(2, '0')}';
+      final date = DateTime.parse(enDate);
+      final j = Jalali.fromDateTime(date);
+      return '${j.year}/${j.month.toString().padLeft(2, '0')}/${j.day.toString().padLeft(2, '0')}';
     } catch (_) {
       return 'تاریخ نامعتبر';
     }
   }
 
   Future<void> _deleteExpense(int id) async {
-    final success = await _apiService.deleteExpense(id);
-    if (success) {
+    final result = await _api.deleteExpense(id);
+    if (result) {
       setState(() => _expenses.removeWhere((e) => e.id == id));
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('هزینه با موفقیت حذف شد')),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('خطا در حذف هزینه')),
-      );
     }
   }
 
-  Future<bool?> _editExpense(Expense expense) async {
-    final updated = await Navigator.pushNamed(context, '/edit-expense', arguments: expense);
-    return updated == true;
-  }
-
-
-  Widget _buildExpenseItem(Expense exp) {
-    final formattedDate = _formatJalali(exp.date);
-
+  Widget _buildItem(Expense exp) {
     return Slidable(
-      key: Key(exp.id.toString()),
+      key: ValueKey(exp.id),
       startActionPane: ActionPane(
         motion: const ScrollMotion(),
         extentRatio: 0.25,
         children: [
           SlidableAction(
             onPressed: (_) async {
-              final updated = await Navigator.pushNamed(
-                context,
-                '/edit-expense',
-                arguments: exp,
-              );
-              if (updated == true) {
-                _loadExpenses();
-              }
+              final updated = await Navigator.pushNamed(context, '/edit-expense', arguments: exp);
+              if (updated == true) _loadExpenses();
             },
             backgroundColor: Colors.green,
             foregroundColor: Colors.white,
@@ -100,18 +70,16 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
             onPressed: (_) async {
               final confirm = await showDialog<bool>(
                 context: context,
-                builder: (ctx) => AlertDialog(
+                builder: (_) => AlertDialog(
                   title: Text('حذف هزینه'),
-                  content: Text('آیا از حذف این هزینه مطمئن هستید؟'),
+                  content: Text('از حذف این هزینه مطمئنی؟'),
                   actions: [
-                    TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text('خیر')),
-                    TextButton(onPressed: () => Navigator.pop(ctx, true), child: Text('بله')),
+                    TextButton(onPressed: () => Navigator.pop(context, false), child: Text('خیر')),
+                    TextButton(onPressed: () => Navigator.pop(context, true), child: Text('بله')),
                   ],
                 ),
               );
-              if (confirm == true && exp.id != null) {
-                await _deleteExpense(exp.id!);
-              }
+              if (confirm == true && exp.id != null) await _deleteExpense(exp.id!);
             },
             backgroundColor: Colors.red,
             foregroundColor: Colors.white,
@@ -120,41 +88,36 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
           ),
         ],
       ),
-      child: Card(
-        margin: EdgeInsets.symmetric(vertical: 8),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        child: ListTile(
-          leading: CircleAvatar(
-            backgroundColor: Colors.red[100],
-            child: Icon(Icons.money_off, color: Colors.red[800]),
-          ),
-          title: Text(exp.text, style: TextStyle(fontWeight: FontWeight.bold)),
-          subtitle: Text(formattedDate),
-          trailing: Text(
-            '${exp.amount} تومان',
-            style: TextStyle(color: Colors.red[800], fontWeight: FontWeight.w600),
-          ),
-        ),
+      child: DaricListCard(
+        title: exp.text,
+        subtitle: _formatJalali(exp.date),
+        trailingText: '${exp.amount} تومان',
+        leadingIcon: Icons.money_off,
+        leadingIconColor: Colors.red[800],
+        backgroundColor: Colors.red[50],
+        onTap: () async {
+          final updated = await Navigator.pushNamed(context, '/edit-expense', arguments: exp);
+          if (updated == true) _loadExpenses();
+        },
       ),
     );
   }
-
-
 
   @override
   Widget build(BuildContext context) {
     return MainScaffold(
       title: 'هزینه‌ها',
       body: _expenses.isEmpty
-          ? Center(child: Text('هزینه‌ای ثبت نشده است', style: TextStyle(fontSize: 16)))
+          ? Center(child: Text('هزینه‌ای ثبت نشده است'))
           : ListView.builder(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               itemCount: _expenses.length,
-              itemBuilder: (context, index) => _buildExpenseItem(_expenses[index]),
+              itemBuilder: (_, i) => _buildItem(_expenses[i]),
             ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pushNamed(context, '/add-expense').then((_) => _loadExpenses());
+        onPressed: () async {
+          final result = await Navigator.pushNamed(context, '/add-expense');
+          if (result == true) _loadExpenses();
         },
         child: Icon(Icons.add),
         tooltip: 'افزودن هزینه',

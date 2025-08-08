@@ -7,6 +7,7 @@ class DaricListCard extends StatelessWidget {
   final String? secondDate;
   final String? trailingText;
   final IconData? leadingIcon;
+  final Color? leadingIconColor;
   final Color? backgroundColor;
   final VoidCallback? onTap;
   final VoidCallback? onLongPress;
@@ -19,6 +20,7 @@ class DaricListCard extends StatelessWidget {
     this.secondDate,
     this.trailingText,
     this.leadingIcon,
+    this.leadingIconColor,
     this.backgroundColor,
     this.onTap,
     this.onLongPress,
@@ -40,72 +42,82 @@ class DaricListCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: Colors.grey[300]!),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Row(
             children: [
-              /// Header Row: title + trailing
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Text(
-                      title,
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  if (trailingText != null)
-                    Text(
-                      trailingText!,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: Colors.red,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                ],
-              ),
-
-              if (subtitle != null) ...[
-                const SizedBox(height: 6),
-                Text(
-                  subtitle!,
-                  style: TextStyle(color: Colors.grey[700]),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
+              if (leadingIcon != null) ...[
+                Icon(leadingIcon, color: leadingIconColor ?? Colors.black, size: 28),
+                const SizedBox(width: 12),
               ],
-
-              const SizedBox(height: 8),
-
-              /// Footer Row: dates
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  if (date != null)
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    /// Header Row
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Icon(Icons.calendar_today, size: 16, color: Colors.grey),
-                        const SizedBox(width: 4),
-                        Text(
-                          date!,
-                          style: const TextStyle(fontSize: 12, color: Colors.grey),
+                        Expanded(
+                          child: Text(
+                            title,
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
+                        if (trailingText != null)
+                          Text(
+                            trailingText!,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Colors.red,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                       ],
                     ),
-                  if (secondDate != null)
-                    Row(
-                      children: [
-                        const Icon(Icons.schedule, size: 16, color: Colors.grey),
-                        const SizedBox(width: 4),
-                        Text(
-                          secondDate!,
-                          style: const TextStyle(fontSize: 12, color: Colors.grey),
-                        ),
-                      ],
-                    ),
-                ],
-              )
+
+                    if (subtitle != null) ...[
+                      const SizedBox(height: 6),
+                      Text(
+                        subtitle!,
+                        style: TextStyle(color: Colors.grey[700]),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+
+                    if (date != null || secondDate != null) ...[
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          if (date != null)
+                            Row(
+                              children: [
+                                const Icon(Icons.calendar_today, size: 16, color: Colors.grey),
+                                const SizedBox(width: 4),
+                                Text(
+                                  date!,
+                                  style: const TextStyle(fontSize: 12, color: Colors.grey),
+                                ),
+                              ],
+                            ),
+                          if (secondDate != null)
+                            Row(
+                              children: [
+                                const Icon(Icons.schedule, size: 16, color: Colors.grey),
+                                const SizedBox(width: 4),
+                                Text(
+                                  secondDate!,
+                                  style: const TextStyle(fontSize: 12, color: Colors.grey),
+                                ),
+                              ],
+                            ),
+                        ],
+                      ),
+                    ],
+                  ],
+                ),
+              ),
             ],
           ),
         ),

@@ -1,32 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:daric/models/expense.dart';
 import 'package:daric/services/api_service.dart';
+import 'package:daric/utils/entry_type.dart';
 import 'package:daric/widgets/finance_form_widget.dart';
 
 class AddExpenseScreen extends StatelessWidget {
-  final ApiService _api = ApiService();
-
-  AddExpenseScreen({super.key});
+  const AddExpenseScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return FinanceFormWidget(
-      title: 'افزودن هزینه',
-      saveButtonText: 'ذخیره هزینه',
-      onSubmit: ({
-        required String description,
-        required double amount,
-        required DateTime date,
-        required int? personId,
-      }) async {
-        final expense = Expense(
-          id: 0,
-          text: description,
-          amount: amount.toInt(),
-          date: date.toIso8601String(),
-          personId: personId,
-        );
-        return await _api.addExpense(expense);
+      type: EntryType.expense,
+      onSubmit: (expense) async {
+        final success = await ApiService().addExpense(expense as Expense);
+        if (success) {
+          if (context.mounted) {
+            Navigator.pop(context, true);
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('هزینه با موفقیت ثبت شد'),
+                backgroundColor: Colors.green,
+              ),
+            );
+          }
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('خطا در ثبت هزینه'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+
+        return success;
       },
     );
   }

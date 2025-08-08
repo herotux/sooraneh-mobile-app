@@ -30,7 +30,7 @@ class DebtListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return FinanceListView<Debt>(
       title: 'لیست بدهی‌ها',
-      fetchItems: () => _api.getDebts(),
+      fetchItems: () async => (await _api.getDebts()) ?? [],
       onDelete: (id) async => await _api.deleteDebt(id),
       onEdit: (debt) async {
         final updated = await Navigator.push(

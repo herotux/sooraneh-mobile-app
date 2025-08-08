@@ -1,29 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:daric/models/income.dart';
 import 'package:daric/services/api_service.dart';
+import 'package:daric/utils/entry_type.dart';
 import 'package:daric/widgets/finance_form_widget.dart';
+import 'package:daric/widgets/main_scaffold.dart';
 
 class EditIncomeScreen extends StatelessWidget {
   final Income income;
 
-  const EditIncomeScreen({super.key, required this.income});
+  const EditIncomeScreen({required this.income, super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('ویرایش درآمد')),
+    return MainScaffold(
+      title: "ویرایش درآمد",
       body: FinanceFormWidget(
         type: EntryType.income,
-        initialIncome: income,
-        onSubmit: (updated) async {
-          final success = await ApiService().updateIncome(updated as Income);
+        initialEntry: income,
+        onSubmit: (updatedEntry) async {
+          final success = await ApiService().updateIncome(updatedEntry as Income);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(success ? 'ویرایش درآمد با موفقیت انجام شد' : 'خطا در ویرایش درآمد'),
+              backgroundColor: success ? Colors.green : Colors.red,
+            ),
+          );
           if (success) {
-            if (context.mounted) Navigator.pop(context, true);
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('خطا در ذخیره تغییرات')),
-            );
+            Navigator.pop(context, true);
           }
+          return success;
         },
       ),
     );

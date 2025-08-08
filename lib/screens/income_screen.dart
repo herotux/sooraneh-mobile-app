@@ -22,7 +22,7 @@ class IncomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return FinanceListView<Income>(
       title: 'درآمدها',
-      fetchItems: () => _api.getIncomes(),
+      fetchItems: () async => (await _api.getIncomes()) ?? [],
       onDelete: (id) => _api.deleteIncome(id),
       onEdit: (income) async {
         final updated = await Navigator.pushNamed(
@@ -39,8 +39,8 @@ class IncomeScreen extends StatelessWidget {
           subtitle: '${_formatJalaliDate(income.date)}',
           trailingText: '${income.amount} تومان',
           backgroundColor: Colors.green[50]!,
-          icon: Icons.attach_money,
-          iconColor: Colors.green[800],
+          leadingIcon: Icons.attach_money,
+          leadingIconColor: Colors.green[800],
           onTap: () async {
             await Navigator.pushNamed(context, '/edit-income', arguments: income);
           },

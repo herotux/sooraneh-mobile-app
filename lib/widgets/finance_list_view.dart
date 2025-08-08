@@ -52,7 +52,10 @@ class _FinanceListViewState<T> extends State<FinanceListView<T>> {
     // اینجا بعدا می‌تونی قابلیت فیلتر اضافه کنی
     showModalBottomSheet(
       context: context,
-      builder: (_) => const CommonFilterSheet(type: 'custom'),
+      builder: (_) => CommonFilterSheet(
+        type: 'custom',
+        onApply: (_) {},
+      ),
     );
   }
 

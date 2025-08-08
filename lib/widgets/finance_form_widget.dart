@@ -1,24 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:daric/widgets/my_date_picker_modal.dart';
 import 'package:daric/widgets/person_dropdown.dart';
+import 'package:daric/utils/entry_type.dart';
+import 'package:daric/models/income.dart';
+import 'package:daric/models/expense.dart';
+import 'package:daric/models/credit.dart';
+import 'package:daric/models/debt.dart';
 
 class FinanceFormWidget extends StatefulWidget {
-  final String title;
-  final String saveButtonText;
-  final Future<bool> Function({
-    required String description,
-    required double amount,
-    required DateTime date,
-    required int? personId,
-  }) onSubmit;
-  final DateTime? initialDate;
+  final EntryType type;
+  final dynamic initialEntry;
+  final Future<bool> Function(dynamic entry) onSubmit;
 
   const FinanceFormWidget({
     super.key,
-    required this.title,
-    required this.saveButtonText,
+    required this.type,
     required this.onSubmit,
-    this.initialDate,
+    this.initialEntry,
   });
 
   @override
@@ -27,10 +25,12 @@ class FinanceFormWidget extends StatefulWidget {
 
 class _FinanceFormWidgetState extends State<FinanceFormWidget> {
   final _formKey = GlobalKey<FormState>();
+
   String _description = '';
   double? _amount;
-  DateTime _selectedDate = DateTime.now();
-  int? _selectedPersonId;
+  DateTime _date = DateTime.now();
+  DateTime? _payDate;
+  int? _personId;
 
   bool _isSaving = false;
   String? _errorMessage;
@@ -38,17 +38,53 @@ class _FinanceFormWidgetState extends State<FinanceFormWidget> {
   @override
   void initState() {
     super.initState();
-    _selectedDate = widget.initialDate ?? DateTime.now();
+    _loadInitialValues();
   }
 
-  Future<void> _selectDate() async {
+  void _loadInitialValues() {
+    final e = widget.initialEntry;
+
+    if (e != null) {
+      if (e is Income) {
+        _description = e.text;
+        _amount = e.amount.toDouble();
+        _date = DateTime.parse(e.date);
+        _personId = e.personId;
+      } else if (e is Expense) {
+        _description = e.text;
+        _amount = e.amount.toDouble();
+        _date = DateTime.parse(e.date);
+        _personId = e.personId;
+      } else if (e is Credit) {
+        _description = e.description ?? '';
+        _amount = e.amount.toDouble();
+        _date = e.date;
+        _payDate = e.payDate;
+        _personId = e.personId;
+      } else if (e is Debt) {
+        _description = e.description;
+        _amount = e.amount.toDouble();
+        _date = e.date;
+        _payDate = e.payDate;
+        _personId = e.personId;
+      }
+    }
+  }
+
+  Future<void> _selectDate({required bool isPayDate}) async {
     final picked = await showMyDatePickerModal(
       context: context,
-      label: 'انتخاب تاریخ',
-      initialDate: _selectedDate,
+      label: isPayDate ? 'تاریخ تسویه' : 'تاریخ ثبت',
+      initialDate: isPayDate ? (_payDate ?? DateTime.now()) : _date,
     );
     if (picked != null) {
-      setState(() => _selectedDate = picked);
+      setState(() {
+        if (isPayDate) {
+          _payDate = picked;
+        } else {
+          _date = picked;
+        }
+      });
     }
   }
 
@@ -61,24 +97,60 @@ class _FinanceFormWidgetState extends State<FinanceFormWidget> {
       _errorMessage = null;
     });
 
+    dynamic entry;
+
     try {
-      final success = await widget.onSubmit(
-        description: _description,
-        amount: _amount!,
-        date: _selectedDate,
-        personId: _selectedPersonId,
-      );
+      switch (widget.type) {
+        case EntryType.income:
+          entry = Income(
+            amount: _amount!.toInt(),
+            text: _description,
+            date: _date.toIso8601String(),
+            personId: _personId,
+          );
+          break;
+
+        case EntryType.expense:
+          entry = Expense(
+            amount: _amount!.toInt(),
+            text: _description,
+            date: _date.toIso8601String(),
+            personId: _personId,
+          );
+          break;
+
+        case EntryType.credit:
+          if (_payDate == null) throw Exception("تاریخ تسویه لازم است");
+          entry = Credit(
+            id: 0,
+            amount: _amount!.toInt(),
+            description: _description,
+            date: _date,
+            payDate: _payDate!,
+            personId: _personId,
+          );
+          break;
+
+        case EntryType.debt:
+          if (_payDate == null) throw Exception("تاریخ تسویه لازم است");
+          entry = Debt(
+            amount: _amount!.toInt(),
+            description: _description,
+            date: _date,
+            payDate: _payDate!,
+            personId: _personId,
+          );
+          break;
+      }
+
+      final success = await widget.onSubmit(entry);
 
       if (success && mounted) Navigator.pop(context, true);
       if (!success) {
-        setState(() {
-          _errorMessage = 'خطا در ذخیره اطلاعات';
-        });
+        setState(() => _errorMessage = 'خطا در ذخیره اطلاعات');
       }
     } catch (e) {
-      setState(() {
-        _errorMessage = 'خطا: $e';
-      });
+      setState(() => _errorMessage = 'خطا: $e');
     } finally {
       setState(() => _isSaving = false);
     }
@@ -89,7 +161,7 @@ class _FinanceFormWidgetState extends State<FinanceFormWidget> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        appBar: AppBar(title: Text(widget.title)),
+        appBar: AppBar(title: Text(_getTitle())),
         body: Padding(
           padding: const EdgeInsets.all(16),
           child: _isSaving
@@ -99,58 +171,61 @@ class _FinanceFormWidgetState extends State<FinanceFormWidget> {
                   child: ListView(
                     children: [
                       TextFormField(
+                        initialValue: _description,
                         decoration: const InputDecoration(
                           labelText: 'توضیحات',
                           border: OutlineInputBorder(),
                         ),
-                        validator: (val) {
-                          if (val == null || val.trim().isEmpty) {
-                            return 'توضیح را وارد کنید';
-                          }
-                          if (val.trim().length > 30) {
-                            return 'حداکثر ۳۰ کاراکتر';
-                          }
-                          return null;
-                        },
+                        validator: (val) =>
+                            val == null || val.trim().isEmpty ? 'توضیح را وارد کنید' : null,
                         onSaved: (val) => _description = val!.trim(),
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
+                        initialValue: _amount?.toString(),
                         decoration: const InputDecoration(
                           labelText: 'مبلغ',
                           border: OutlineInputBorder(),
                         ),
                         keyboardType: TextInputType.number,
                         validator: (val) {
-                          if (val == null || val.trim().isEmpty) {
-                            return 'مبلغ را وارد کنید';
-                          }
-                          final parsed = double.tryParse(val.replaceAll(',', ''));
+                          final parsed = double.tryParse(val ?? '');
                           if (parsed == null || parsed <= 0) {
-                            return 'مبلغ نامعتبر است';
+                            return 'مبلغ معتبر نیست';
                           }
                           return null;
                         },
-                        onSaved: (val) =>
-                            _amount = double.tryParse(val!.replaceAll(',', '')),
+                        onSaved: (val) => _amount = double.tryParse(val!),
                       ),
                       const SizedBox(height: 16),
                       InkWell(
-                        onTap: _selectDate,
+                        onTap: () => _selectDate(isPayDate: false),
                         child: InputDecorator(
                           decoration: const InputDecoration(
-                            labelText: 'تاریخ',
+                            labelText: 'تاریخ ثبت',
                             border: OutlineInputBorder(),
                           ),
-                          child: Text(
-                            '${_selectedDate.year}/${_selectedDate.month.toString().padLeft(2, '0')}/${_selectedDate.day.toString().padLeft(2, '0')}',
-                          ),
+                          child: Text(_formatDate(_date)),
                         ),
                       ),
                       const SizedBox(height: 16),
+                      if (widget.type == EntryType.credit || widget.type == EntryType.debt)
+                        InkWell(
+                          onTap: () => _selectDate(isPayDate: true),
+                          child: InputDecorator(
+                            decoration: const InputDecoration(
+                              labelText: 'تاریخ تسویه',
+                              border: OutlineInputBorder(),
+                            ),
+                            child: Text(
+                              _payDate != null ? _formatDate(_payDate!) : 'انتخاب نشده',
+                            ),
+                          ),
+                        ),
+                      const SizedBox(height: 16),
                       PersonDropdown(
-                        selectedPersonId: _selectedPersonId,
-                        onChanged: (id) => _selectedPersonId = id,
+                        selectedPersonId: _personId,
+                        onChanged: (id) => _personId = id,
                       ),
                       if (_errorMessage != null) ...[
                         const SizedBox(height: 16),
@@ -163,7 +238,7 @@ class _FinanceFormWidgetState extends State<FinanceFormWidget> {
                       const SizedBox(height: 24),
                       ElevatedButton(
                         onPressed: _submit,
-                        child: Text(widget.saveButtonText),
+                        child: const Text('ذخیره'),
                       ),
                     ],
                   ),
@@ -171,5 +246,22 @@ class _FinanceFormWidgetState extends State<FinanceFormWidget> {
         ),
       ),
     );
+  }
+
+  String _getTitle() {
+    switch (widget.type) {
+      case EntryType.income:
+        return 'افزودن درآمد';
+      case EntryType.expense:
+        return 'افزودن هزینه';
+      case EntryType.credit:
+        return 'افزودن طلب';
+      case EntryType.debt:
+        return 'افزودن بدهی';
+    }
+  }
+
+  String _formatDate(DateTime date) {
+    return '${date.year}/${date.month.toString().padLeft(2, '0')}/${date.day.toString().padLeft(2, '0')}';
   }
 }
