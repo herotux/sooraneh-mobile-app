@@ -3,16 +3,15 @@ import 'package:daric/models/income.dart';
 import 'package:daric/services/api_service.dart';
 import 'package:daric/utils/entry_type.dart';
 import 'package:daric/widgets/finance_form_widget.dart';
+import 'package:daric/widgets/main_scaffold.dart'; // ✅ Import MainScaffold
 
 class AddIncomeScreen extends StatelessWidget {
   const AddIncomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('افزودن درآمد'),
-      ),
+    return MainScaffold( // ✅ Use MainScaffold instead of Scaffold
+      title: 'افزودن درآمد',
       body: FinanceFormWidget(
         type: EntryType.income,
         onSubmit: (income) async {
