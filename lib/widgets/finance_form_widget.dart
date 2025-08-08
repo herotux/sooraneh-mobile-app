@@ -1,4 +1,14 @@
-// widgets/finance_form_widget.dart
+import 'package:flutter/material.dart';
+import 'package:daric/widgets/my_date_picker_modal.dart';
+import 'package:daric/widgets/person_dropdown.dart';
+import 'package:daric/utils/entry_type.dart';
+import 'package:daric/models/income.dart';
+import 'package:daric/models/expense.dart';
+import 'package:daric/models/credit.dart';
+import 'package:daric/models/debt.dart';
+
+
+
 class FinanceFormWidget extends StatefulWidget {
   final EntryType type;
   final dynamic initialEntry;
