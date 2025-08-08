@@ -18,53 +18,8 @@ class PersonDropdown extends StatefulWidget {
 }
 
 class _PersonDropdownState extends State<PersonDropdown> {
-  Person? _selectedPerson;
-  bool _isLoadingInitial = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadInitialPerson();
-  }
-
-  Future<void> _loadInitialPerson() async {
-    if (widget.selectedPersonId != null) {
-      try {
-        final persons = await ApiService().getPersons();
-        if (persons != null) {
-          final matched = persons.firstWhere(
-            (p) => p.id == widget.selectedPersonId,
-            orElse: () => Person(id: 0, firstName: 'نامشخص', relation: 'نامشخص'),
-          );
-          if (matched.id != 0) {
-            setState(() {
-              _selectedPerson = matched;
-            });
-          }
-        }
-      } catch (e) {
-        print('Error loading initial person: $e');
-      }
-    }
-    setState(() {
-      _isLoadingInitial = false;
-    });
-  }
-
-
   @override
   Widget build(BuildContext context) {
-    if (_isLoadingInitial) {
-      return InputDecorator(
-        decoration: InputDecoration(
-          labelText: 'نام شخص',
-          border: OutlineInputBorder(),
-          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-        ),
-        child: Center(child: CircularProgressIndicator()),
-      );
-    }
-
     return DropdownSearch<Person>(
       asyncItems: (String filter) async {
         final persons = await ApiService().getPersons();
@@ -72,38 +27,47 @@ class _PersonDropdownState extends State<PersonDropdown> {
         if (filter.isEmpty) return persons;
         return persons
             .where((p) {
-              final fullName = '${p.firstName} ${p.lastName ?? ''}'.toLowerCase();
+              final fullName =
+                  '${p.firstName} ${p.lastName ?? ''}'.toLowerCase();
               return fullName.contains(filter.toLowerCase());
             })
             .toList();
       },
-      itemAsString: (Person p) => '${p.firstName} ${p.lastName ?? ''} (${p.relation ?? ''})',
-      selectedItem: _selectedPerson,
-      onChanged: (person) {
-        setState(() {
-          _selectedPerson = person;
-        });
-        widget.onChanged(person?.id);
-      },
+      itemAsString: (Person p) =>
+          '${p.firstName} ${p.lastName ?? ''} (${p.relation ?? ''})',
+
+      // این بخش باعث میشه آیتم انتخاب‌شده با id مقایسه بشه
+      compareFn: (a, b) => a.id == b.id,
+
+      // مقدار اولیه بر اساس selectedPersonId
+      selectedItem: widget.selectedPersonId != null
+          ? Person(id: widget.selectedPersonId!, firstName: '', relation: '')
+          : null,
+
+      onChanged: (person) => widget.onChanged(person?.id),
+
       dropdownBuilder: (context, selectedItem) {
-        if (selectedItem == null) {
-          return Text('انتخاب شخص');
+        if (selectedItem == null || selectedItem.id == null) {
+          return const Text('انتخاب شخص');
         }
-        return Text('${selectedItem.firstName} ${selectedItem.lastName ?? ''}');
+        return Text(
+          '${selectedItem.firstName} ${selectedItem.lastName ?? ''}',
+        );
       },
       popupProps: PopupProps.menu(
         showSearchBox: true,
         searchFieldProps: TextFieldProps(
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             labelText: 'جستجوی نام',
             border: OutlineInputBorder(),
           ),
         ),
       ),
       dropdownDecoratorProps: DropDownDecoratorProps(
-        dropdownSearchDecoration: InputDecoration(
+        dropdownSearchDecoration: const InputDecoration(
           labelText: "نام شخص",
-          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          contentPadding:
+              EdgeInsets.symmetric(horizontal: 12, vertical: 4),
           border: OutlineInputBorder(),
         ),
       ),
