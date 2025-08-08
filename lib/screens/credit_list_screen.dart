@@ -27,7 +27,7 @@ class CreditsListScreen extends StatelessWidget {
         return DaricListCard(
           title: 'از ${credit.person?.firstName ?? 'نامشخص'}',
           subtitle: credit.description,
-          trailingText: '${credit.amount} تومان',
+          amountText: '${credit.amount} تومان',
           date: 'تاریخ: ${credit.date.toLocal().toString().split(" ")[0]}',
           secondDate: 'سررسید: ${credit.payDate.toLocal().toString().split(" ")[0]}',
         );

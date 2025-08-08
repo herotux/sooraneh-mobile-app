@@ -14,7 +14,7 @@ class AddPersonScreen extends StatelessWidget {
       body: _AddPersonForm(
         onSubmit: (newPerson) async {
           final success = await ApiService().addPerson(newPerson);
-          if (success && mounted) {
+          if (success) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text("طرف حساب با موفقیت اضافه شد"),

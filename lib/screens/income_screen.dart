@@ -37,7 +37,7 @@ class IncomeScreen extends StatelessWidget {
         return DaricListCard(
           title: income.text,
           subtitle: '${_formatJalaliDate(income.date)}',
-          trailingText: '${income.amount} تومان',
+          amountText: '${income.amount} تومان',
           backgroundColor: Colors.green[50]!,
           leadingIcon: Icons.attach_money,
           leadingIconColor: Colors.green[800],

@@ -45,7 +45,7 @@ class PersonListScreen extends StatelessWidget {
         return DaricListCard(
           title: person.fullName,
           subtitle: person.relation,
-          trailingText: '', // نمایش اضافی نداریم
+          amountText: '', // نمایش اضافی نداریم
           leadingIcon: Icons.person,
           leadingIconColor: Colors.blue,
           onTap: () async {

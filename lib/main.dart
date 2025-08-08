@@ -111,7 +111,7 @@ class MyApp extends StatelessWidget {
         '/add-category': (context) => AddCategoryScreen(),
 
         // مدیریت طلب
-        '/credit-list': (context) => CreditListScreen(),
+        '/credit-list': (context) => CreditsListScreen(),
         '/add-credit': (context) => AddCreditScreen(),
         '/edit-credit': (context) {
           final credit = ModalRoute.of(context)!.settings.arguments as Credit;
@@ -127,7 +127,7 @@ class MyApp extends StatelessWidget {
         },
 
         // ✅ مدیریت طرف حساب (اضافه شده)
-        '/persons': (context) => PersonsScreen(),
+        '/persons': (context) => PersonListScreen(),
         '/add-person': (context) => AddPersonScreen(),
         '/edit-person': (context) {
           final person = ModalRoute.of(context)!.settings.arguments as Person;

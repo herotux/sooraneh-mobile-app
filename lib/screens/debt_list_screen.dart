@@ -43,7 +43,7 @@ class DebtListScreen extends StatelessWidget {
         return DaricListCard(
           title: 'به ${_personDisplayName(debt)}',
           subtitle: debt.description,
-          trailingText: '${debt.amount} تومان',
+          amountText: '${debt.amount} تومان',
           date: 'گرفته شده: ${debt.date.toLocal().toString().split(" ")[0]}',
           secondDate: 'سررسید: ${debt.payDate.toLocal().toString().split(" ")[0]}',
           backgroundColor: _getCardColor(debt),

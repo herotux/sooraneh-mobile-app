@@ -91,7 +91,7 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
       child: DaricListCard(
         title: exp.text,
         subtitle: _formatJalali(exp.date),
-        trailingText: '${exp.amount} تومان',
+        amountText: '${exp.amount} تومان',
         leadingIcon: Icons.money_off,
         leadingIconColor: Colors.red[800],
         backgroundColor: Colors.red[50],
