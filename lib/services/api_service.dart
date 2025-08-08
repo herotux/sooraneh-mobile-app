@@ -204,5 +204,15 @@ class ApiService {
   Future<bool> updateDebt(Debt d) => _put('v1/debts', d.id ?? 0, d.toJson());
   Future<bool> deleteDebt(int id) => _delete('v1/debts', id);
 
-  Future<List<Person>?> getPersons() => _getList('v1/persons/', Person.fromJson);
+  Future<List<Person>?> getPersons() => 
+    _getList('v1/persons/', Person.fromJson);
+
+  Future<bool> addPerson(Person person) => 
+      _post('v1/persons/', person.toJson());
+
+  Future<bool> updatePerson(Person person) => 
+      _put('v1/persons', person.id ?? 0, person.toJson());
+
+  Future<bool> deletePerson(int id) => 
+      _delete('v1/persons', id);
 }

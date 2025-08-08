@@ -2,45 +2,63 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+// --- خود اپ و تم ---
 import 'package:daric/theme/app_theme.dart';
 import 'package:daric/utils/jwt_storage.dart';
 import 'package:daric/utils/full_screen_helper.dart';
 
-// Screens
+// --- صفحات (Screens) ---
 import 'package:daric/screens/login_screen.dart';
 import 'package:daric/screens/home_screen.dart';
+
+// مدیریت دسته‌بندی
 import 'package:daric/screens/category_screen.dart';
 import 'package:daric/screens/add_category_screen.dart';
+
+// مدیریت بدهی
 import 'package:daric/screens/debt_list_screen.dart';
+import 'package:daric/screens/add_debt_screen.dart';
 import 'package:daric/screens/edit_debt_screen.dart';
+
+// مدیریت طلب
 import 'package:daric/screens/credit_list_screen.dart';
+import 'package:daric/screens/add_credit_screen.dart';
 import 'package:daric/screens/edit_credit_screen.dart';
+
+// مدیریت درآمد و هزینه
 import 'package:daric/screens/income_screen.dart';
 import 'package:daric/screens/expense_screen.dart';
 import 'package:daric/screens/add_income_screen.dart';
 import 'package:daric/screens/add_expense_screen.dart';
 import 'package:daric/screens/edit_expense_screen.dart';
-import 'package:daric/screens/log_screen.dart';
-import 'package:daric/screens/persons_screen.dart';
-import 'package:daric/screens/settings_screen.dart';
-import 'package:daric/screens/add_credit_screen.dart';
-import 'package:daric/screens/add_debt_screen.dart';
+import 'package:daric/screens/edit_income_screen.dart';
 
-// Models
+// مدیریت طرف حساب (افزوده شده)
+import 'package:daric/screens/persons_screen.dart';
+import 'package:daric/screens/add_person_screen.dart';
+import 'package:daric/screens/edit_person_screen.dart';
+
+// صفحات دیگر
+import 'package:daric/screens/log_screen.dart';
+import 'package:daric/screens/settings_screen.dart';
+
+// --- مدل‌ها (Models) ---
 import 'package:daric/models/credit.dart';
 import 'package:daric/models/debt.dart';
 import 'package:daric/models/expense.dart';
+import 'package:daric/models/income.dart';
+import 'package:daric/models/person.dart'; // برای آرگومان ویرایش
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // فقط یک بار Immerse Mode را تنظیم کن — اما نه فعال کن
+  // تنظیم استایل سیستم (نوار وضعیت و ناوبری)
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
     systemNavigationBarColor: Colors.transparent,
   ));
 
-  // اجازه دهید صفحات خودشان Immerse Mode را فعال/غیرفعال کنند
+  // تعیین مسیر اولیه بر اساس وجود توکن
   final token = await JwtStorage.getToken();
   runApp(MyApp(initialRoute: token != null ? '/home' : '/login'));
 }
@@ -68,34 +86,57 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       initialRoute: initialRoute,
       routes: {
+        // صفحات اصلی
         '/login': (context) => LoginScreen(),
         '/home': (context) => HomeScreen(),
+
+        // مدیریت هزینه
         '/expense-list': (context) => ExpenseScreen(),
+        '/add-expense': (context) => AddExpenseScreen(),
+        '/edit-expense': (context) {
+          final expense = ModalRoute.of(context)!.settings.arguments as Expense;
+          return EditExpenseScreen(expense: expense);
+        },
+
+        // مدیریت درآمد
         '/income-list': (context) => IncomeScreen(),
         '/add-income': (context) => AddIncomeScreen(),
-        '/add-expense': (context) => AddExpenseScreen(),
+        '/edit-income': (context) {
+          final income = ModalRoute.of(context)!.settings.arguments as Income;
+          return EditIncomeScreen(income: income);
+        },
+
+        // مدیریت دسته‌بندی
         '/categories': (context) => CategoriesScreen(),
         '/add-category': (context) => AddCategoryScreen(),
-        '/credit-list': (context) => CreditsListScreen(),
+
+        // مدیریت طلب
+        '/credit-list': (context) => CreditListScreen(),
         '/add-credit': (context) => AddCreditScreen(),
         '/edit-credit': (context) {
           final credit = ModalRoute.of(context)!.settings.arguments as Credit;
           return EditCreditScreen(credit: credit);
         },
+
+        // مدیریت بدهی
         '/debt-list': (context) => DebtListScreen(),
         '/add-debt': (context) => AddDebtScreen(),
         '/debts/edit': (context) {
           final debt = ModalRoute.of(context)!.settings.arguments as Debt;
           return EditDebtScreen(debt: debt);
         },
-        '/edit-expense': (context) {
-          final expense = ModalRoute.of(context)!.settings.arguments as Expense;
-          return EditExpenseScreen(expense: expense);
+
+        // ✅ مدیریت طرف حساب (اضافه شده)
+        '/persons': (context) => PersonsScreen(),
+        '/add-person': (context) => AddPersonScreen(),
+        '/edit-person': (context) {
+          final person = ModalRoute.of(context)!.settings.arguments as Person;
+          return EditPersonScreen(person: person);
         },
+
+        // صفحات دیگر
         '/settings': (context) => SettingsScreen(),
         '/logs': (context) => LogScreen(),
-        '/persons': (context) => PersonsScreen(),
-        '/edit-income': (context) => EditIncomeScreen(),
       },
     );
   }
