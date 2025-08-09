@@ -28,16 +28,8 @@ jobs:
           cp -r assets daric_app/assets
           cp pubspec.yaml daric_app/pubspec.yaml
 
-      # ✅ حل مشکل assets/images/
-      - name: Ensure assets/images directory exists
-        run: |
-          mkdir -p daric_app/assets/images
-          touch daric_app/assets/images/.gitkeep  # برای اطمینان که پوشه خالی هم پاک نشه
-
-      # ✅ افزایش minSdkVersion به 23 به‌صورت خودکار
-      - name: Increase minSdkVersion to 23
-        run: |
-          sed -i 's/minSdkVersion [0-9]\+/minSdkVersion 23/g' daric_app/android/app/build.gradle
+      - name: Set minSdkVersion to 23
+        run: sed -i 's/minSdkVersion 21/minSdkVersion 23/' daric_app/android/app/build.gradle
 
       - name: Add INTERNET and READ_SMS permissions to AndroidManifest.xml
         run: |
@@ -92,7 +84,7 @@ jobs:
             exit 0
           fi
           CAPTION="${{ steps.get_commit.outputs.message }}"
-          CAPTION=$(echo "$CAPTION" | head -c 1000)
+          CAPTION=$(echo "$CAPTION" | head -c 1000)  # limit to 1000 characters
           echo "Sending APK to Telegram with caption:"
           echo "$CAPTION"
           URL="https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendDocument"
@@ -100,4 +92,4 @@ jobs:
             -F chat_id="$TELEGRAM_CHAT_ID" \
             -F document=@"daric_app/build/app/outputs/flutter-apk/app-release.apk" \
             -F caption="$CAPTION" \
-            "$URL" || echo "⚠️ Warning: Failed to send to Telegram (possibly blocked in some regions)"
+            "$URL" || echo "Warning: Failed to send to Telegram (possibly blocked or network issue)"
