@@ -220,11 +220,11 @@ class ApiService {
 
   Future<bool> addIncomeFromSms(Map<String, dynamic> data) async {
     try {
-      // فرضاً اطلاعات لازم را از data استخراج می‌کنیم
       final income = Income(
         amount: data['amount'] ?? 0,
-        description: data['description'] ?? '',
-        // سایر فیلدها مثل تاریخ اگر داری اضافه کن
+        text: data['description'] ?? '',
+        // می‌توانید date و سایر فیلدها را هم اضافه کنید
+        date: data['date'] ?? DateTime.now().toIso8601String(),
       );
       return await addIncome(income);
     } catch (e) {
@@ -237,8 +237,8 @@ class ApiService {
     try {
       final expense = Expense(
         amount: data['amount'] ?? 0,
-        description: data['description'] ?? '',
-        // سایر فیلدها مثل تاریخ اگر داری اضافه کن
+        text: data['description'] ?? '',
+        date: data['date'] ?? DateTime.now().toIso8601String(),
       );
       return await addExpense(expense);
     } catch (e) {
