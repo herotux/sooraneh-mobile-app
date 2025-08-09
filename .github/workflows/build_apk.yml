@@ -29,10 +29,10 @@ jobs:
           cp pubspec.yaml daric_app/pubspec.yaml
 
 
-      - name: Add INTERNET permission to AndroidManifest.xml
+      - name: Add INTERNET and READ_SMS permissions to AndroidManifest.xml
         run: |
-          sed -i '/<manifest/a\  <uses-permission android:name="android.permission.INTERNET" />' daric_app/android/app/src/main/AndroidManifest.xml
-          sed -i '/<manifest/a\  <'<uses-permission android:name="android.permission.READ_SMS" />' daric_app/android/app/src/main/AndroidManifest.xml
+          sed -i '/<manifest>/a\    <uses-permission android:name="android.permission.INTERNET" />' daric_app/android/app/src/main/AndroidManifest.xml
+          sed -i '/<manifest>/a\    <uses-permission android:name="android.permission.READ_SMS" />' daric_app/android/app/src/main/AndroidManifest.xml
 
       - name: Set app name in strings.xml (فارسی و انگلیسی)
         run: |
