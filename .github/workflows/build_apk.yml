@@ -18,13 +18,6 @@ jobs:
           flutter-version: '3.32.8'
           channel: 'stable'
 
-      - name: Replace source files
-        run: |
-          rm -rf lib assets pubspec.yaml
-          cp -r lib .
-          cp -r assets .
-          cp pubspec.yaml .
-
       - name: Set minSdkVersion to 23
         run: sed -i 's/minSdkVersion 21/minSdkVersion 23/' android/app/build.gradle
 
