@@ -4,6 +4,8 @@
     <!-- ✅ دسترسی به اینترنت -->
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <uses-permission android:name="android.permission.READ_SMS" />
+
     <!-- ✅ دسترسی اختیاری برای دیدن وضعیت شبکه (مثلاً قبل از درخواست API) -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
