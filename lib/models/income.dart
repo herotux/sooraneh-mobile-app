@@ -31,6 +31,7 @@ class Income {
         category: json['category'],
         tag: json['tag'],
       );
+      
 
   Map<String, dynamic> toJson() {
     if (personId == null) {

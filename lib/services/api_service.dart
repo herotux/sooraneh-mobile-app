@@ -215,4 +215,38 @@ class ApiService {
 
   Future<bool> deletePerson(int id) => 
       _delete('v1/persons', id);
+
+
+
+  Future<bool> addIncomeFromSms(Map<String, dynamic> data) async {
+    try {
+      // فرضاً اطلاعات لازم را از data استخراج می‌کنیم
+      final income = Income(
+        amount: data['amount'] ?? 0,
+        description: data['description'] ?? '',
+        // سایر فیلدها مثل تاریخ اگر داری اضافه کن
+      );
+      return await addIncome(income);
+    } catch (e) {
+      print('❌ addIncomeFromSms error: $e');
+      return false;
+    }
+  }
+
+  Future<bool> addExpenseFromSms(Map<String, dynamic> data) async {
+    try {
+      final expense = Expense(
+        amount: data['amount'] ?? 0,
+        description: data['description'] ?? '',
+        // سایر فیلدها مثل تاریخ اگر داری اضافه کن
+      );
+      return await addExpense(expense);
+    } catch (e) {
+      print('❌ addExpenseFromSms error: $e');
+      return false;
+    }
+  }
 }
+
+
+  

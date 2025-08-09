@@ -1,13 +1,15 @@
 import 'package:flutter_sms_inbox/flutter_sms_inbox.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:daric/services/bank_processors/base_bank_processor.dart';
 import 'package:daric/services/bank_processors/sepeh_processor.dart';
-import 'package:daric/services/bank_processors/base_processor.dart';
 import 'package:daric/services/api_service.dart';
+import 'package:daric/models/income.dart';
+import 'package:daric/models/expense.dart';
 
 class SmsService {
-  final List<BankSmsProcessor> _processors = [
+  final List<BaseBankProcessor> _processors = [
     SepehProcessor(),
-    // بانک‌های دیگر اینجا اضافه می‌شوند
+    // سایر بانک‌ها اینجا اضافه شوند
   ];
 
   final _prefsKey = "last_sms_id";
@@ -27,7 +29,7 @@ class SmsService {
     final SmsQuery query = SmsQuery();
     final messages = await query.querySms(
       kinds: [SmsQueryKind.inbox],
-      count: 50, // آخرین ۵۰ پیامک برای اطمینان
+      count: 50,
     );
 
     int newestId = lastId;
@@ -35,25 +37,52 @@ class SmsService {
 
     for (final sms in messages) {
       final id = sms.id ?? 0;
-      if (id <= lastId) continue; // پیامک قدیمی، نادیده بگیر
+      if (id <= lastId) continue;
 
+      final sender = sms.address ?? '';
       final text = sms.body ?? '';
+
+      bool processed = false;
+
       for (final processor in _processors) {
-        if (processor.matches(text)) {
-          final result = processor.parse(text);
+        if (processor.matchesSender(sender)) {
+          final result = processor.process(text);
           if (result != null) {
+            final type = result['type'] as String;
+            final amount = result['amount'] as int;
+            final description = result['description'] as String;
+            final dateIso = result['date'] as String? ?? DateTime.now().toIso8601String();
+
             bool success = false;
-            if (result['type'] == 'income') {
-              success = await api.addIncomeFromSms(result);
-            } else if (result['type'] == 'expense') {
-              success = await api.addExpenseFromSms(result);
+
+            if (type == 'income') {
+              final income = Income(
+                amount: amount,
+                text: description,
+                date: dateIso,
+              );
+              success = await api.addIncome(income);
+            } else if (type == 'expense') {
+              final expense = Expense(
+                amount: amount,
+                text: description,
+                date: dateIso,
+              );
+              success = await api.addExpense(expense);
             }
-            if (success) {
-              if (id > newestId) newestId = id;
+
+            if (success && id > newestId) {
+              newestId = id;
             }
+
+            processed = true;
+            break;
           }
-          break;
         }
+      }
+
+      if (!processed) {
+        print('Ignored SMS from $sender: $text');
       }
     }
 
