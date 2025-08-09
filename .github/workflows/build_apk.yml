@@ -18,9 +18,6 @@ jobs:
           flutter-version: '3.32.8'
           channel: 'stable'
 
-      - name: Set minSdkVersion to 23
-        run: sed -i 's/minSdkVersion 21/minSdkVersion 23/' android/app/build.gradle
-
       - name: Add INTERNET and READ_SMS permissions to AndroidManifest.xml
         run: |
           sed -i '/<manifest>/a\    <uses-permission android:name="android.permission.INTERNET" />' android/app/src/main/AndroidManifest.xml
