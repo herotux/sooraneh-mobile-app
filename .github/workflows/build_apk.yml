@@ -17,52 +17,21 @@ jobs:
         with:
           flutter-version: '3.32.8'
           channel: 'stable'
-
-      - name: Create new Flutter project
-        run: flutter create daric_app
-
-      - name: Replace source files
-        run: |
-          rm -rf daric_app/lib daric_app/assets daric_app/pubspec.yaml
-          cp -r lib daric_app/lib
-          cp -r assets daric_app/assets
-          cp pubspec.yaml daric_app/pubspec.yaml
-
-
-      - name: Add INTERNET permission to AndroidManifest.xml
-        run: |
-          sed -i '/<manifest/a\  <uses-permission android:name="android.permission.INTERNET" />' daric_app/android/app/src/main/AndroidManifest.xml
-
-      - name: Set app name in strings.xml (فارسی و انگلیسی)
-        run: |
-          STRINGS_FILE=daric_app/android/app/src/main/res/values/strings.xml
-          if [ ! -f "$STRINGS_FILE" ]; then
-            mkdir -p $(dirname "$STRINGS_FILE")
-            echo '<?xml version="1.0" encoding="utf-8"?>' > "$STRINGS_FILE"
-            echo '<resources>' >> "$STRINGS_FILE"
-            echo '    <string name="app_name">دریک | Daric</string>' >> "$STRINGS_FILE"
-            echo '</resources>' >> "$STRINGS_FILE"
-          else
-            sed -i 's|<string name="app_name">.*</string>|<string name="app_name">دریک | Daric</string>|' "$STRINGS_FILE"
-          fi
-
+          
       - name: Get dependencies
-        working-directory: daric_app
         run: flutter pub get
 
       - name: Generate app icon
-        working-directory: daric_app
         run: flutter pub run flutter_launcher_icons:main
 
       - name: Build APK (release)
-        working-directory: daric_app
         run: flutter build apk --release
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-release-apk
-          path: daric_app/build/app/outputs/flutter-apk/app-release.apk
+          path: build/app/outputs/flutter-apk/app-release.apk
 
       - name: Get last Git commit message
         id: get_commit
@@ -81,10 +50,12 @@ jobs:
             exit 0
           fi
           CAPTION="${{ steps.get_commit.outputs.message }}"
-          CAPTION=${CAPTION:0:1000}  # limit caption to 1000 chars
+          CAPTION=$(echo "$CAPTION" | head -c 1000)
           echo "Sending APK to Telegram with caption:"
           echo "$CAPTION"
-          curl -F document=@daric_app/build/app/outputs/flutter-apk/app-release.apk \
-               -F chat_id="$TELEGRAM_CHAT_ID" \
-               -F caption="$CAPTION" \
-               https://api.telegram.org/bot"$TELEGRAM_BOT_TOKEN"/sendDocument
+          URL="https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendDocument"
+          curl -f -v -X POST \
+            -F chat_id="$TELEGRAM_CHAT_ID" \
+            -F document=@"build/app/outputs/flutter-apk/app-release.apk" \
+            -F caption="$CAPTION" \
+            "$URL" || echo "Warning: Failed to send to Telegram (possibly blocked or network issue)"

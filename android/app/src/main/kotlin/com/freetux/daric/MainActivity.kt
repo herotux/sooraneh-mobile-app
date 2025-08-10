@@ -1,4 +1,4 @@
-package com.example.daric_new
+package com.freetux.daric
 
 import io.flutter.embedding.android.FlutterActivity
 
