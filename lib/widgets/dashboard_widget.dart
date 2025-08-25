@@ -71,7 +71,11 @@ class _DashboardWidgetState extends State<DashboardWidget> {
   }
 
   String _formatJalaliDate(String dateStr) {
-    final j = Jalali.fromDateTime(DateTime.parse(dateStr));
+    final dt = DateTime.tryParse(dateStr);
+    if (dt == null) {
+      return 'تاریخ نامعتبر';
+    }
+    final j = Jalali.fromDateTime(dt);
     return '${_convertToPersianNumber(j.year.toString())}/${_convertToPersianNumber(j.month.toString().padLeft(2, '0'))}/${_convertToPersianNumber(j.day.toString().padLeft(2, '0'))}';
   }
 
