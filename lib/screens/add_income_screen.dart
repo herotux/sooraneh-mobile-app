@@ -15,8 +15,8 @@ class AddIncomeScreen extends StatelessWidget {
       body: FinanceFormWidget(
         type: EntryType.income,
         onSubmit: (income) async {
-          final success = await ApiService().addIncome(income as Income);
-          if (success) {
+          final newIncome = await ApiService().addIncome(income as Income);
+          if (newIncome != null) {
             if (context.mounted) {
               Navigator.pop(context, true);
               ScaffoldMessenger.of(context).showSnackBar(
@@ -36,7 +36,7 @@ class AddIncomeScreen extends StatelessWidget {
               );
             }
           }
-          return success;
+          return newIncome != null;
         },
       ),
     );

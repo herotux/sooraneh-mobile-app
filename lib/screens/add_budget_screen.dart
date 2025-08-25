@@ -36,11 +36,11 @@ class _AddBudgetScreenState extends State<AddBudgetScreen> {
       category: _selectedCategoryId,
     );
 
-    final success = await _apiService.addBudget(budget);
+    final newBudget = await _apiService.addBudget(budget);
 
     setState(() { _isLoading = false; });
 
-    if (success) {
+    if (newBudget != null) {
       Navigator.pop(context, true);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('بودجه با موفقیت اضافه شد')));
     } else {
