@@ -238,7 +238,7 @@ class _FinanceFormWidgetState extends State<FinanceFormWidget> {
                   SearchableAddDropdown<Person>(
                     label: "طرف حساب",
                     onChanged: (person) => setState(() => _personId = person?.id),
-                    onSearch: (query) => ApiService().getPersons(), // Simplified search
+                    onSearch: (query) => ApiService().getPersons().then((value) => value ?? []),
                     onAddNew: (context) => _showAddPersonModal(context),
                   ),
                   const SizedBox(height: 16),
@@ -246,14 +246,14 @@ class _FinanceFormWidgetState extends State<FinanceFormWidget> {
                     SearchableAddDropdown<Category>(
                       label: "دسته‌بندی",
                       onChanged: (category) => setState(() => _categoryId = category?.id),
-                      onSearch: (query) => ApiService().getCategories(),
+                      onSearch: (query) => ApiService().getCategories().then((value) => value ?? []),
                     onAddNew: (context) => _showAddCategoryModal(context),
                     ),
                     const SizedBox(height: 16),
                     SearchableAddDropdown<Tag>(
                     label: "تگ",
                     onChanged: (tag) => setState(() => _tagId = tag?.id),
-                    onSearch: (query) => ApiService().getTags(),
+                      onSearch: (query) => ApiService().getTags().then((value) => value ?? []),
                     onAddNew: (context) => _showAddTagModal(context),
                   ),
                   ],

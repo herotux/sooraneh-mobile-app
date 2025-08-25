@@ -130,7 +130,7 @@ class _AddBudgetScreenState extends State<AddBudgetScreen> {
               SearchableAddDropdown<Category>(
                 label: "دسته‌بندی (اختیاری)",
                 onChanged: (category) => setState(() => _selectedCategoryId = category?.id),
-                onSearch: (query) => ApiService().getCategories(),
+                onSearch: (query) => ApiService().getCategories().then((value) => value ?? []),
                 onAddNew: (context) => _showAddCategoryModal(context),
               ),
               SizedBox(height: 24),

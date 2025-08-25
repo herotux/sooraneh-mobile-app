@@ -28,13 +28,13 @@ class _AddTagScreenState extends State<AddTagScreen> {
       description: _descriptionController.text.trim().isEmpty ? null : _descriptionController.text.trim(),
     );
 
-    final success = await _apiService.addTag(tag);
+    final newTag = await _apiService.addTag(tag);
 
     setState(() {
       _isLoading = false;
     });
 
-    if (success) {
+    if (newTag != null) {
       Navigator.pop(context, true); // Go back with success result
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('تگ با موفقیت اضافه شد')),

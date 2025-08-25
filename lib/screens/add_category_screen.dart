@@ -32,14 +32,14 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
       parent: null,
     );
 
-    final success = await _apiService.addCategory(category);
+    final newCategory = await _apiService.addCategory(category);
 
     setState(() {
       _isLoading = false;
-      _message = success ? 'دسته‌بندی با موفقیت اضافه شد' : 'خطا در ثبت دسته‌بندی';
+      _message = newCategory != null ? 'دسته‌بندی با موفقیت اضافه شد' : 'خطا در ثبت دسته‌بندی';
     });
 
-    if (success) {
+    if (newCategory != null) {
       _nameController.clear();
       FocusScope.of(context).unfocus();
     }

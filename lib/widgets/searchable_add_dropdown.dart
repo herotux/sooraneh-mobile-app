@@ -68,8 +68,6 @@ class _SearchableAddDropdownState<T extends SearchableItem> extends State<Search
                   onPressed: () async {
                     final newItem = await widget.onAddNew(context);
                     if (newItem != null) {
-                      // Add the new item to the dropdown and select it
-                      _popupBuilderKey.currentState?.addItem(newItem);
                       widget.onChanged(newItem);
                       Navigator.pop(context); // Close the bottom sheet
                     }
