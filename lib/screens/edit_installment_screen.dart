@@ -51,12 +51,18 @@ class _EditInstallmentScreenState extends State<EditInstallmentScreen> {
       return;
     }
     final persons = await _apiService.getPersons();
-    if (persons != null) {
-      setState(() {
-        _initialPerson = persons.firstWhere((p) => p.id == _selectedPersonId, orElse: () => persons.first);
-      });
+    if (persons != null && persons.isNotEmpty) {
+      try {
+        _initialPerson = persons.firstWhere((p) => p.id == _selectedPersonId);
+      } catch (e) {
+        _initialPerson = null; // Not found
+      }
     }
-    setState(() => _isInitializing = false);
+    // This was a bug, it should be inside the if block to avoid setting state on an unmounted widget
+    // if the api call is slow.
+    if(mounted){
+      setState(() => _isInitializing = false);
+    }
   }
 
   Future<void> _updateInstallment() async {
@@ -178,9 +184,9 @@ class _EditInstallmentScreenState extends State<EditInstallmentScreen> {
               TextFormField(controller: _rateController, decoration: InputDecoration(labelText: 'نرخ سود (اختیاری)'), keyboardType: TextInputType.number, inputFormatters: [FilteringTextInputFormatter.digitsOnly]),
               SizedBox(height: 16),
               MyDatePicker(
-                labelText: 'تاریخ اولین قسط',
-                selectedDate: _selectedDate,
-                onDateSelected: (date) => setState(() => _selectedDate = date),
+                label: 'تاریخ اولین قسط',
+                initialDate: _selectedDate,
+                onDateChanged: (date) => setState(() => _selectedDate = date),
               ),
               SizedBox(height: 16),
               _isInitializing
@@ -189,7 +195,7 @@ class _EditInstallmentScreenState extends State<EditInstallmentScreen> {
                     label: "طرف حساب (اختیاری)",
                     selectedItem: _initialPerson,
                     onChanged: (person) => setState(() => _selectedPersonId = person?.id),
-                    onSearch: (query) => ApiService().getPersons(),
+                    onSearch: (query) => ApiService().getPersons().then((value) => value ?? []),
                     onAddNew: (context) => _showAddPersonModal(context),
                   ),
               SizedBox(height: 24),

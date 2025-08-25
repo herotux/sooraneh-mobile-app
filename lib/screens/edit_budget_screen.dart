@@ -163,7 +163,7 @@ class _EditBudgetScreenState extends State<EditBudgetScreen> {
                     label: "دسته‌بندی (اختیاری)",
                     selectedItem: _initialCategory,
                     onChanged: (category) => setState(() => _selectedCategoryId = category?.id),
-                    onSearch: (query) => ApiService().getCategories(),
+                    onSearch: (query) => ApiService().getCategories().then((value) => value ?? []),
                     onAddNew: (context) => _showAddCategoryModal(context),
                   ),
               SizedBox(height: 24),

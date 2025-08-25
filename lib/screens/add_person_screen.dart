@@ -13,24 +13,28 @@ class AddPersonScreen extends StatelessWidget {
       title: "افزودن طرف حساب",
       body: _AddPersonForm(
         onSubmit: (newPerson) async {
-          final success = await ApiService().addPerson(newPerson);
-          if (success) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text("طرف حساب با موفقیت اضافه شد"),
-                backgroundColor: Colors.green,
-              ),
-            );
-            Navigator.pop(context, true); // برگشت و نشان‌دادن موفقیت
+          final createdPerson = await ApiService().addPerson(newPerson);
+          if (createdPerson != null) {
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("طرف حساب با موفقیت اضافه شد"),
+                  backgroundColor: Colors.green,
+                ),
+              );
+              Navigator.pop(context, true); // برگشت و نشان‌دادن موفقیت
+            }
           } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text("خطا در افزودن طرف حساب"),
-                backgroundColor: Colors.red,
-              ),
-            );
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("خطا در افزودن طرف حساب"),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
           }
-          return success;
+          return createdPerson;
         },
       ),
     );
@@ -38,7 +42,7 @@ class AddPersonScreen extends StatelessWidget {
 }
 
 class _AddPersonForm extends StatefulWidget {
-  final Future<bool> Function(Person person) onSubmit;
+  final Future<Person?> Function(Person person) onSubmit;
 
   const _AddPersonForm({required this.onSubmit});
 
@@ -89,10 +93,7 @@ class _AddPersonFormState extends State<_AddPersonForm> {
         relation: _relationController.text.trim(),
       );
 
-      final success = await widget.onSubmit(newPerson);
-      if (!success) {
-        setState(() => _errorMessage = 'ذخیره ناموفق بود');
-      }
+      await widget.onSubmit(newPerson);
     } catch (e) {
       setState(() => _errorMessage = 'خطا: $e');
     } finally {
