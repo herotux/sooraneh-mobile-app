@@ -31,7 +31,7 @@ class Person implements SearchableItem {
         'relation': relation,
       };
 
-  String get fullName => lastName != null && lastName!.isNotEmpty
+  String get fullName => (lastName != null && lastName.isNotEmpty)
       ? '$firstName $lastName'
       : firstName;
 }
