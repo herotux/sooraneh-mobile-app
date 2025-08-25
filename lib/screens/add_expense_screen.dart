@@ -15,8 +15,8 @@ class AddExpenseScreen extends StatelessWidget {
       body: FinanceFormWidget(
         type: EntryType.expense,
         onSubmit: (expense) async {
-          final success = await ApiService().addExpense(expense as Expense);
-          if (success) {
+          final newExpense = await ApiService().addExpense(expense as Expense);
+          if (newExpense != null) {
             if (context.mounted) {
               Navigator.pop(context, true);
               ScaffoldMessenger.of(context).showSnackBar(
@@ -36,7 +36,7 @@ class AddExpenseScreen extends StatelessWidget {
               );
             }
           }
-          return success;
+          return newExpense != null;
         },
       ),
     );

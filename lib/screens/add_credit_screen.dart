@@ -15,8 +15,8 @@ class AddCreditScreen extends StatelessWidget {
       body: FinanceFormWidget(
         type: EntryType.credit,
         onSubmit: (credit) async {
-          final success = await ApiService().addCredit(credit as Credit);
-          if (success) {
+          final newCredit = await ApiService().addCredit(credit as Credit);
+          if (newCredit != null) {
             if (context.mounted) {
               Navigator.pop(context, true);
               ScaffoldMessenger.of(context).showSnackBar(
@@ -36,7 +36,7 @@ class AddCreditScreen extends StatelessWidget {
               );
             }
           }
-          return success;
+          return newCredit != null;
         },
       ),
     );

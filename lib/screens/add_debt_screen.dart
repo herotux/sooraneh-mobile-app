@@ -15,8 +15,8 @@ class AddDebtScreen extends StatelessWidget {
       body: FinanceFormWidget(
         type: EntryType.debt,
         onSubmit: (debt) async {
-          final success = await ApiService().addDebt(debt as Debt);
-          if (success) {
+          final newDebt = await ApiService().addDebt(debt as Debt);
+          if (newDebt != null) {
             if (context.mounted) {
               Navigator.pop(context, true);
               ScaffoldMessenger.of(context).showSnackBar(
@@ -36,7 +36,10 @@ class AddDebtScreen extends StatelessWidget {
               );
             }
           }
-          return success;
+          // The FinanceFormWidget expects a bool, but we don't need the return value here.
+          // The core issue is the type check. For now, we return a bool.
+          // This might need further refactoring if the caller of AddDebtScreen needs the object.
+          return newDebt != null;
         },
       ),
     );
