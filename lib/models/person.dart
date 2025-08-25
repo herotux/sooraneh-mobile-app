@@ -1,4 +1,7 @@
-class Person {
+import 'package:daric/widgets/searchable_add_dropdown.dart';
+
+class Person implements SearchableItem {
+  @override
   final int id;
   final String firstName;
   final String? lastName;
@@ -10,6 +13,9 @@ class Person {
     this.lastName,
     required this.relation,
   });
+
+  @override
+  String get name => fullName;
 
   factory Person.fromJson(Map<String, dynamic> json) => Person(
         id: json['id'],

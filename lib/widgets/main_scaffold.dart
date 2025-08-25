@@ -49,6 +49,9 @@ class _MainScaffoldState extends State<MainScaffold> {
     _MenuItem(title: 'هزینه‌ها', icon: Icons.explicit, route: '/expense-list'),
     _MenuItem(title: 'درآمدها', icon: Icons.account_balance_wallet, route: '/income-list'),
     _MenuItem(title: 'اشخاص', icon: Icons.people, route: '/persons'),
+    _MenuItem(title: 'تگ‌ها', icon: Icons.label, route: '/tags'),
+    _MenuItem(title: 'بودجه‌ها', icon: Icons.monetization_on, route: '/budgets'),
+    _MenuItem(title: 'اقساط', icon: Icons.calendar_view_week, route: '/installments'),
     _MenuItem(title: 'تنظیمات', icon: Icons.settings, route: '/settings'),
   ];
 
