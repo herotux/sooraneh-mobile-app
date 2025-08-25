@@ -38,6 +38,15 @@ import 'package:daric/screens/persons_screen.dart';
 import 'package:daric/screens/add_person_screen.dart';
 import 'package:daric/screens/edit_person_screen.dart';
 
+// مدیریت تگ ها
+import 'package:daric/screens/tags_screen.dart';
+
+// مدیریت بودجه
+import 'package:daric/screens/budgets_screen.dart';
+
+// مدیریت اقساط
+import 'package:daric/screens/installments_screen.dart';
+
 // صفحات دیگر
 import 'package:daric/screens/log_screen.dart';
 import 'package:daric/screens/settings_screen.dart';
@@ -133,6 +142,15 @@ class MyApp extends StatelessWidget {
           final person = ModalRoute.of(context)!.settings.arguments as Person;
           return EditPersonScreen(person: person);
         },
+
+        // مدیریت تگ ها
+        '/tags': (context) => TagsScreen(),
+
+        // مدیریت بودجه
+        '/budgets': (context) => BudgetsScreen(),
+
+        // مدیریت اقساط
+        '/installments': (context) => InstallmentsScreen(),
 
         // صفحات دیگر
         '/settings': (context) => SettingsScreen(),

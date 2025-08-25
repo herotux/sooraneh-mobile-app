@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:daric/models/category.dart';
+import 'package:daric/models/tag.dart';
+import 'package:daric/services/api_service.dart';
 import 'package:daric/widgets/my_date_picker_modal.dart';
-import 'package:daric/widgets/person_dropdown.dart';
 import 'package:daric/utils/entry_type.dart';
+import 'package:daric/widgets/searchable_add_dropdown.dart';
+import 'package:daric/models/person.dart';
 import 'package:daric/models/income.dart';
 import 'package:daric/models/expense.dart';
 import 'package:daric/models/credit.dart';
@@ -30,6 +34,8 @@ class _FinanceFormWidgetState extends State<FinanceFormWidget> {
   DateTime _date = DateTime.now();
   DateTime? _payDate;
   int? _personId;
+  int? _categoryId;
+  int? _tagId;
   bool _isSaving = false;
   String? _errorMessage;
 
@@ -47,11 +53,15 @@ class _FinanceFormWidgetState extends State<FinanceFormWidget> {
         _amount = e.amount.toDouble();
         _date = DateTime.parse(e.date);
         _personId = e.personId;
+        _categoryId = e.category;
+        _tagId = e.tag;
       } else if (e is Expense) {
         _description = e.text;
         _amount = e.amount.toDouble();
         _date = DateTime.parse(e.date);
         _personId = e.personId;
+        _categoryId = e.category;
+        _tagId = e.tag;
       } else if (e is Credit) {
         _description = e.description ?? '';
         _amount = e.amount.toDouble();
@@ -106,6 +116,8 @@ class _FinanceFormWidgetState extends State<FinanceFormWidget> {
             text: _description,
             date: _date.toIso8601String(),
             personId: _personId,
+            category: _categoryId,
+            tag: _tagId,
           );
           break;
 
@@ -116,6 +128,8 @@ class _FinanceFormWidgetState extends State<FinanceFormWidget> {
             text: _description,
             date: _date.toIso8601String(),
             personId: _personId,
+            category: _categoryId,
+            tag: _tagId,
           );
           break;
 
@@ -221,10 +235,28 @@ class _FinanceFormWidgetState extends State<FinanceFormWidget> {
                       ),
                     ),
                   const SizedBox(height: 16),
-                  PersonDropdown(
-                    selectedPersonId: _personId,
-                    onChanged: (id) => _personId = id,
+                  SearchableAddDropdown<Person>(
+                    label: "طرف حساب",
+                    onChanged: (person) => setState(() => _personId = person?.id),
+                    onSearch: (query) => ApiService().getPersons(), // Simplified search
+                    onAddNew: (context) => _showAddPersonModal(context),
                   ),
+                  const SizedBox(height: 16),
+                  if (widget.type == EntryType.expense || widget.type == EntryType.income) ...[
+                    SearchableAddDropdown<Category>(
+                      label: "دسته‌بندی",
+                      onChanged: (category) => setState(() => _categoryId = category?.id),
+                      onSearch: (query) => ApiService().getCategories(),
+                    onAddNew: (context) => _showAddCategoryModal(context),
+                    ),
+                    const SizedBox(height: 16),
+                    SearchableAddDropdown<Tag>(
+                    label: "تگ",
+                    onChanged: (tag) => setState(() => _tagId = tag?.id),
+                    onSearch: (query) => ApiService().getTags(),
+                    onAddNew: (context) => _showAddTagModal(context),
+                  ),
+                  ],
                   if (_errorMessage != null) ...[
                     const SizedBox(height: 16),
                     Text(
@@ -246,5 +278,174 @@ class _FinanceFormWidgetState extends State<FinanceFormWidget> {
 
   String _formatDate(DateTime date) {
     return '${date.year}/${date.month.toString().padLeft(2, '0')}/${date.day.toString().padLeft(2, '0')}';
+  }
+
+  Future<Person?> _showAddPersonModal(BuildContext context) {
+    final firstNameController = TextEditingController();
+    final lastNameController = TextEditingController();
+    final relationController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+
+    return showDialog<Person>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text('افزودن شخص جدید'),
+          content: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(
+                  controller: firstNameController,
+                  decoration: InputDecoration(labelText: 'نام'),
+                  validator: (val) => val!.isEmpty ? 'نام را وارد کنید' : null,
+                ),
+                TextFormField(
+                  controller: lastNameController,
+                  decoration: InputDecoration(labelText: 'نام خانوادگی (اختیاری)'),
+                ),
+                TextFormField(
+                  controller: relationController,
+                  decoration: InputDecoration(labelText: 'نسبت'),
+                   validator: (val) => val!.isEmpty ? 'نسبت را وارد کنید' : null,
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text('لغو'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                if (formKey.currentState!.validate()) {
+                  final newPerson = await ApiService().addPerson(
+                    Person(
+                      id: 0,
+                      firstName: firstNameController.text,
+                      lastName: lastNameController.text,
+                      relation: relationController.text,
+                    ),
+                  );
+                  if (newPerson != null && dialogContext.mounted) {
+                    Navigator.pop(dialogContext, newPerson);
+                  } else {
+                    ScaffoldMessenger.of(dialogContext).showSnackBar(
+                      SnackBar(content: Text('خطا در افزودن شخص')),
+                    );
+                  }
+                }
+              },
+              child: Text('ذخیره'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<Category?> _showAddCategoryModal(BuildContext context) {
+    final nameController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+    bool isIncome = false; // Default to expense
+
+    return showDialog<Category>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text('افزودن دسته‌بندی جدید'),
+          content: StatefulBuilder(
+            builder: (context, setModalState) {
+              return Form(
+                key: formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextFormField(
+                      controller: nameController,
+                      decoration: InputDecoration(labelText: 'نام دسته‌بندی'),
+                      validator: (val) => val!.isEmpty ? 'نام را وارد کنید' : null,
+                    ),
+                    SwitchListTile(
+                      title: Text('برای درآمد'),
+                      value: isIncome,
+                      onChanged: (val) => setModalState(() => isIncome = val),
+                    )
+                  ],
+                ),
+              );
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text('لغو'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                if (formKey.currentState!.validate()) {
+                  final newCategory = await ApiService().addCategory(
+                    Category(id: 0, name: nameController.text, isIncome: isIncome),
+                  );
+                  if (newCategory != null && dialogContext.mounted) {
+                    Navigator.pop(dialogContext, newCategory);
+                  } else {
+                     ScaffoldMessenger.of(dialogContext).showSnackBar(
+                      SnackBar(content: Text('خطا در افزودن دسته‌بندی')),
+                    );
+                  }
+                }
+              },
+              child: Text('ذخیره'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<Tag?> _showAddTagModal(BuildContext context) {
+    final nameController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+
+    return showDialog<Tag>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text('افزودن تگ جدید'),
+          content: Form(
+            key: formKey,
+            child: TextFormField(
+              controller: nameController,
+              decoration: InputDecoration(labelText: 'نام تگ'),
+              validator: (val) => val!.isEmpty ? 'نام را وارد کنید' : null,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text('لغو'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                if (formKey.currentState!.validate()) {
+                  final newTag = await ApiService().addTag(Tag(name: nameController.text));
+                  if (newTag != null && dialogContext.mounted) {
+                    Navigator.pop(dialogContext, newTag);
+                  } else {
+                    ScaffoldMessenger.of(dialogContext).showSnackBar(
+                      SnackBar(content: Text('خطا در افزودن تگ')),
+                    );
+                  }
+                }
+              },
+              child: Text('ذخیره'),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

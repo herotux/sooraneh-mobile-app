@@ -1,5 +1,9 @@
-class Category {
+import 'package:daric/widgets/searchable_add_dropdown.dart';
+
+class Category implements SearchableItem {
+  @override
   final int id;
+  @override
   final String name;
   final bool isIncome;
   final int? parent;
