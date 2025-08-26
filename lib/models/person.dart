@@ -31,7 +31,11 @@ class Person implements SearchableItem {
         'relation': relation,
       };
 
-  String get fullName => (lastName != null && lastName.isNotEmpty)
-      ? '$firstName $lastName'
-      : firstName;
+  String get fullName {
+    final lName = lastName;
+    if (lName != null && lName.isNotEmpty) {
+      return '$firstName $lName';
+    }
+    return firstName;
+  }
 }
