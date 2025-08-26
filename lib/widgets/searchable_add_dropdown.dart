@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 
-// A generic model that all our dropdown items should conform to.
-// This ensures they have an ID and a name for display.
-abstract class SearchableItem {
-  int? get id;
-  String get name;
-}
+import 'package:daric/models/searchable_item.dart';
 
 class SearchableAddDropdown<T extends SearchableItem> extends StatefulWidget {
   final String label;
