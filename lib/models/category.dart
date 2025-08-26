@@ -1,4 +1,4 @@
-import 'package:daric/widgets/searchable_add_dropdown.dart';
+import 'package:daric/models/searchable_item.dart';
 
 class Category implements SearchableItem {
   @override
